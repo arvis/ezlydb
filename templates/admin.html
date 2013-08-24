@@ -1,0 +1,30 @@
+<html ng-app>
+<head>
+<title>EasyDb</title>
+<script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
+    
+<script
+    src="static/admin.js" ></script>
+    
+</head>
+<body>
+
+<div ng-controller="DbFieldController">
+      <form novalidate class="css-form">
+        Name: <input type="text" ng-model="dbField.name" required /><br />
+        Field type <select ng-model="dbField.field_type">
+          <option value="text_field">Text</option>
+          <option value="int_field">Integer</option>
+          <option value="float_field">Float</option>
+          <option value="date_field">Date</option>
+        </select> <br />
+        
+        Default value: <input type="text" ng-model="dbField.default_value" /><br />
+        
+        <button ng-click="update(dbField)">Add</button>
+      </form>
+    </div>
+    
+</body>
+</html>
+
