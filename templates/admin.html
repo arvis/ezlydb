@@ -1,3 +1,4 @@
+{% raw %}
 <html ng-app>
 <head>
 <title>EasyDb</title>
@@ -21,10 +22,13 @@
         
         Default value: <input type="text" ng-model="dbField.default_value" /><br />
         
-        <button ng-click="update(dbField)">Add</button>
+        <button ng-click="add(dbField)">Add</button>
       </form>
+      <pre>form = {{dbField | json}}</pre>
+      <pre>master = {{master | json}}</pre>      
+      
     </div>
     
 </body>
 </html>
-
+{% endraw %}

@@ -10,17 +10,21 @@ function PhoneListCtrl($scope, $http) {
 
 
 function DbFieldController($scope) {
-    $scope.master= {};
+    $scope.master= [];
 
-    $scope.update = function(dbField) {
-        $scope.master= angular.copy(dbField);
+    $scope.add = function(dbField) {
+        //$scope.master= angular.copy(dbField);
+        //angular.extend($scope.master, dbField);
+        $scope.master.push(dbField);
+        $scope.dbField ={};
+       
     };
 
     $scope.reset = function() {
         $scope.user = angular.copy($scope.master);
     };
 
-    $scope.dbField.field_type = 'text_field';
+    //  $scope.dbField.field_type = 'text_field';
 
 
     $scope.reset();
