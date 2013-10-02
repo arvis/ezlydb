@@ -2,6 +2,11 @@
 <html ng-app>
 <head>
 <title>EasyDb</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
 <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
     
 <script
@@ -10,22 +15,58 @@
 </head>
 <body>
 
-<div ng-controller="DbFieldController">
-      <form novalidate class="css-form">
-        Name: <input type="text" ng-model="dbField.name" required /><br />
-        Field type <select ng-model="dbField.field_type">
-          <option value="text_field">Text</option>
-          <option value="int_field">Integer</option>
-          <option value="float_field">Float</option>
-          <option value="date_field">Date</option>
-        </select> <br />
+<h1> Table Customers</h1>
+<div  class="well" ng-controller="DbFieldController">
+
+<div class="row">
+    <h3>Field list</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                <th>Name</th>
+                <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="field in master " >
+                    <td>{{field.name}}</td>
+                    <td>{{field.field_type}}</td>
+                    <td><button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button></td>
+                    
+                </tr>
+            </tbody>
+        </table>
         
-        Default value: <input type="text" ng-model="dbField.default_value" /><br />
+    <h3>Field properties </h3>
+
+      <form role="form" novalidate class="css-form">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter field name" ng-model="dbField.name" required />
+
+            <label for="field_type">Field type</label>
+            <select class="form-control" id="field_type" ng-model="dbField.field_type">
+              <option value="text_field">Text</option>
+              <option value="int_field">Integer</option>
+              <option value="float_field">Float</option>
+              <option value="date_field">Date</option>
+            </select>
+            
+            <label for="name">Default value</label>
+            <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
+            
+        </div>      
         
-        <button ng-click="add(dbField)">Add</button>
+        <button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button>
       </form>
+</div>
+
+      
       <pre>form = {{dbField | json}}</pre>
       <pre>master = {{master | json}}</pre>      
+      
+      
+      
       
     </div>
     
