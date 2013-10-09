@@ -9,67 +9,106 @@
 
 <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
     
-<script
-    src="static/admin.js" ></script>
+<script src="/static/admin.js" ></script>
     
 </head>
 <body>
+<div class="container">        
 
-<h1> Table Customers</h1>
-<div  class="well" ng-controller="DbFieldController">
+<div ng-controller="DbFieldController">
+<h1>Form {{ formProps.title }}
+  <span class="pull-right" >   
+  <button type="button"  ng-click="showFormProperties=!showFormProperties" class="btn btn-default btn-xs">Click to edit form properties</button> 
+    <button type="button" class="btn btn-info btn-s" ng-click="post_form_data()"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
+  </span>
+</h1>
 
-<div class="row">
-    <h3>Field list</h3>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                <th>Name</th>
-                <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="field in master " >
-                    <td>{{field.name}}</td>
-                    <td>{{field.field_type}}</td>
-                    <td><button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button></td>
-                    
-                </tr>
-            </tbody>
-        </table>
-        
-    <h3>Field properties </h3>
+ <div ng-show="showFormProperties">
+     
+    <form role="form" novalidate class="css-form">
+    <div class="form-group">
+        <label for="name">Title</label>
+        <input type="text" class="form-control" id="form_title" placeholder="Enter form title" ng-model="formProps.title" required />
+        <label for="field_type">Form type</label>
+        <select class="form-control" id="form_type" ng-model="formProps.form_type">
+          <option value="single_record" selected>Single record</option>
+          <option value="grid">Grid</option>
+        </select>
 
-      <form role="form" novalidate class="css-form">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" placeholder="Enter field name" ng-model="dbField.name" required />
 
-            <label for="field_type">Field type</label>
-            <select class="form-control" id="field_type" ng-model="dbField.field_type">
-              <option value="text_field">Text</option>
-              <option value="int_field">Integer</option>
-              <option value="float_field">Float</option>
-              <option value="date_field">Date</option>
-            </select>
+    </div>      
+
+  <button type="button"  ng-click="showFormProperties=!showFormProperties" class="btn btn-success btn-s">Done</button> 
+    </form>
+     
+     
+</div>
+
+<div class="well">
+    <ul class="list-group" >
+        <li class="list-group-item" ng-repeat="field in master "  >
+            {{field.name}}  
+              <span class="pull-right" >   
+              <button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">click to edit</button>
+              </span>
+             <div ng-show="field.editorEnabled">
+                <input type="text" ng-model="field.name"  />
+              <a href="#" ng-click="field.editorEnabled=!field.editorEnabled">Done editing?</a>
+            </div>
+    
+    </ul>
+
+    <button type="button"  ng-click="showAddField=!showAddField" class="btn btn-success">Add new field</button> 
+
+    <div ng-show="showAddField">        
+        <h3>Field properties </h3>
+          <form role="form" novalidate class="css-form">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter field name" ng-model="dbField.name" required />
+
+                <label for="field_type">Field type</label>
+                <select class="form-control" id="field_type" ng-model="dbField.field_type">
+                  <option value="text_field">Text</option>
+                  <option value="int_field">Integer</option>
+                  <option value="float_field">Float</option>
+                  <option value="date_field">Date</option>
+                </select>
+                
+                <label for="name">Default value</label>
+                <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
+                
+                <div class="form-row" data-ng-switch on="dbField.field_type">
+                    <div data-ng-switch-when="text_field">
+                    Text data: <input type="text"  />
+                    </div>
+                    <div data-ng-switch-when="date_field">
+                        Date: <input type="text"  />
+                    </div>
+                </div>
+            </div>      
             
-            <label for="name">Default value</label>
-            <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
-            
-        </div>      
-        
-        <button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button>
-      </form>
+            <button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button>
+          </form>
+    </div>
+    
+
 </div>
 
       
+     <button type="button"  ng-click="showHiddenData=!showHiddenData" class="btn btn-default btn-xs">Show dev data</button> 
+     <div ng-show="showHiddenData">
       <pre>form = {{dbField | json}}</pre>
       <pre>master = {{master | json}}</pre>      
+      <pre>formProps = {{formProps | json}}</pre>      
+    </div>
       
       
       
       
     </div>
-    
+
+</div>    
 </body>
 </html>
 {% endraw %}
