@@ -14,8 +14,9 @@
 </head>
 
 <body>
- 
+<div class="container">        
 <div ng-controller="SingleFormController">
+<h3>{{ form_name }}</h3>
     
 
     <div data-ng-include data-src="'/show_list/{{form_name}}'"></div>
@@ -27,8 +28,9 @@
     <div class="well" data-ng-include data-src="'/show_form/{{form_name}}'"></div>
 </div>
   
+</div>  
   
-  
+</body>  
   
 
 </html>

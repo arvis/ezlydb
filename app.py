@@ -39,6 +39,11 @@ def render_input(data):
     input_data='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="formProps.%s" required />' % (data["name"],data["name"],data["name"], )
     return input_data
     
+    
+def render_row_buttons():
+    out='<button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">edit</button>'    
+    out+='<button type="button" ng-click="delete(field.name)" class="btn btn-info btn-xs">delete</button>'    
+    return out
 
 def render_form(form_id):
     form_data=forms_list[0]
