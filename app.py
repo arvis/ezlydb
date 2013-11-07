@@ -4,20 +4,22 @@ from flask import request
 from flask import Flask
 from flask.ext.pymongo import PyMongo
 from bson import json_util
+from bson.objectid import ObjectId
+
 
 app = Flask(__name__)
 mongo = PyMongo(app)
 
 #form_data=[{'name':'form1',"title":"form 1",'fields':[{ }] }]
 
-forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","type":"text"},{"name":"field2","type":"text"}] }]
+forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","title":"field 1","type":"text"},{"name":"field2","title":"field 2","type":"text"}] }]
 
 
 @app.route("/")
 def main():
     return render_template('index.html')
 
-@app.route("/admin")
+@app.route("/admin/")
 def admin():
     return render_template('admin_menu.html')
     
@@ -25,10 +27,14 @@ def admin():
 def admin_form():
     return render_template('admin.html')
     
+@app.route("/my_form")
+def mock_form():
+    return render_template('mock_form.html')
+    
 
 def render_form_header(form_data):
     form_head= "<h3> %s </h3>" % (form_data["title"])
-    form_head+='<form ng-submit="set_field()">'
+    form_head+='<form ng-submit="add_row()">'
     return form_head
 
 def render_form_footer():
@@ -36,13 +42,13 @@ def render_form_footer():
 
 
 def render_input(data):
-    input_data='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="formProps.%s" required />' % (data["name"],data["name"],data["name"], )
+    input_data='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required />' % (data["name"],data["name"],data["name"], )
     return input_data
     
     
 def render_row_buttons():
     out='<button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">edit</button>'    
-    out+='<button type="button" ng-click="delete(field.name)" class="btn btn-info btn-xs">delete</button>'    
+    out+=' <button type="button" ng-click="delete_row(field,$index)" class="btn btn-danger btn-xs">delete</button>'    
     return out
 
 def render_form(form_id):
@@ -56,14 +62,21 @@ def render_form(form_id):
 
 def render_list_definition(form_name):
     form_data=forms_list[0]
+
+    
+    buttons=render_row_buttons()
     output='<table class="table"><tr>'
     for field in form_data["data"]:
-        output+='<th> %s </td>' % (field["name"] )
+        output+='<th> %s </th>' % (field["name"] )
     
+    output+='<th></th>'
     output+='</tr><tr ng-repeat="field in data ">'
+    output+='<td ng-bind="field._id.$oid "> </td>' 
     for field in form_data["data"]:
         output+='<td ng-bind="field.%s"> </td>' % (field["name"] )
-    output+="</tr></table>"
+    
+    output+= "<td>"+buttons+"</td>"
+    output+= "</tr></table>"
     return output 
     
 def render_list_head(form_name):
@@ -71,9 +84,15 @@ def render_list_head(form_name):
 
 @app.route("/show_list/<form_name>",methods=['GET'])
 def show_list(form_name):
+    return render_template('data_list.html',form_data=forms_list[0]["data"])
+
+
+@app.route("/tmp_show/",methods=['GET'])
+def tmp_show_list(form_name):
     out=render_list_definition(form_name)
-    print out
     return out
+
+
 
 @app.route("/show_form/<form_name>",methods=['GET'])
 def show_form(form_name):
@@ -83,12 +102,33 @@ def show_form(form_name):
 
 
 @app.route("/post_data/",methods=['POST'])
-def post_form():
+def update_row():
     data=request.json["data"]
-    form_name=request.json["form_name"]
-    print data,form_name
-    mongo.db.test_data.save(data)
+    row_id=request.json["id"]
+
+    #TODO: check if that element exists
+    del data["_id"] 
+
+    val=mongo.db["test_data"].update({'_id': ObjectId(row_id)},  data)
+    #return self.db[table_name].update({"_id":row_data["_id"]}, row_data)
+    #import pdb; pdb.set_trace()
     return "success"
+    
+@app.route("/add_row/",methods=['POST'])
+def add_row():
+    data=request.json["data"]
+    mongo.db["test_data"].insert(data)
+    return "success"
+
+    
+@app.route("/delete_row/",methods=['POST'])
+def delete_row():
+    data=request.json
+    #import pdb; pdb.set_trace()
+    
+    ret = mongo.db["test_data"].remove({'_id': ObjectId(data["id"])} );
+    return "success"
+
 
 @app.route("/data/<form_name>",methods=['GET'])
 def get_all(form_name):
@@ -109,9 +149,7 @@ def show_forms_json():
 
 @app.route("/admin/add_form",methods=['POST'])
 def add_form_json():
-    #return "aaaa"
     print request.json
-    #print request.form['form_name']
     form_data.append({'name':'form6',"title":"form 6"})
     return "eee"
 
