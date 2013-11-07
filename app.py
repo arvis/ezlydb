@@ -110,7 +110,6 @@ def update_row():
     del data["_id"] 
 
     val=mongo.db["test_data"].update({'_id': ObjectId(row_id)},  data)
-    #return self.db[table_name].update({"_id":row_data["_id"]}, row_data)
     #import pdb; pdb.set_trace()
     return "success"
     
@@ -124,7 +123,6 @@ def add_row():
 @app.route("/delete_row/",methods=['POST'])
 def delete_row():
     data=request.json
-    #import pdb; pdb.set_trace()
     
     ret = mongo.db["test_data"].remove({'_id': ObjectId(data["id"])} );
     return "success"
@@ -133,11 +131,7 @@ def delete_row():
 @app.route("/data/<form_name>",methods=['GET'])
 def get_all(form_name):
     docs = mongo.db["test_data"].find()
-    
-    #import pdb; pdb.set_trace()
-    
     json_docs=json.dumps(list(docs), default=json_util.default)
-    #return render_template('all.html',docs=docs)
     return json_docs 
 
 

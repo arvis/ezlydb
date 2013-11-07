@@ -2,7 +2,7 @@
 function SingleFormController($scope, $http) {
   //$scope.data=[];  
   $scope.form_name="sample_form_name";  
-  $scope.formProps={};
+  $scope.field={};
   
   $http.get('data/aaa').success(function(data) {
     $scope.data = data;
@@ -50,16 +50,15 @@ function SingleFormController($scope, $http) {
 
   $scope.add_row=function(){
 
-    console.log("add_row");
     //$scope.formProps=row;
     var data={};
-    data.data=$scope.formProps;
+    data.data=$scope.field;
     console.log(data);  
     
     $http.post('/add_row/', data).
       success(function(data, status, headers, config) {
-          $scope.formProps={};
-          console.log("success");
+          $scope.data.push($scope.field);
+          $scope.field={};
           
       }).
       error(function(data, status, headers, config) {

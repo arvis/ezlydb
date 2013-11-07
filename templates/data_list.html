@@ -1,23 +1,23 @@
 <ul class="list-group">
   <li class="list-group-item" ng-repeat="field in data ">
-        <span ng-bind="field._id.$oid"></span>  | 
     {% for item in form_data %}
-        {{item.name}} <span ng-bind="field.{{item.name}}"></span>  | 
+        <span ng-bind="field.{{item.name}}"></span>  
         
     {% endfor %}
+        <span class="pull-right">
         <button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">edit</button>    
         <button type="button" ng-click="delete_row(field,$index)" class="btn btn-danger btn-xs">delete</button>
+        </span>
         
-        
-    <form ng-submit="update_row(field)" class="form-horizontal" role="form">
-    {% for form_item in form_data %}
-    <div class="form-group">
-        <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+ <div ng-show="field.editorEnabled">
+        <form ng-submit="update_row(field)" class="form-horizontal" role="form">
+        {% for form_item in form_data %}
+        <div class="form-group">
+            <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+            </div>
         </div>
-    </div>
-    
     {% endfor %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
@@ -25,6 +25,9 @@
     </div>
   </div>    
     </form>
+</div>    
+    
+    
       
   </li>
 </ul>
