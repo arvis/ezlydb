@@ -19,13 +19,6 @@ forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","title":"f
 def main():
     return render_template('index.html')
 
-@app.route("/admin/")
-def admin():
-    return render_template('admin_menu.html')
-    
-@app.route("/admin/forms")
-def admin_form():
-    return render_template('admin.html')
     
 @app.route("/my_form")
 def mock_form():
@@ -135,6 +128,18 @@ def get_all(form_name):
     return json_docs 
 
 
+#--------------------------
+# admin functions
+
+@app.route("/admin/")
+def admin():
+    return render_template('admin_menu.html')
+    
+@app.route("/admin/forms")
+def admin_form():
+    return render_template('admin.html')
+
+
 @app.route("/admin/form_list")
 def show_forms_json():
     #TODO: replace with dynamic not dymmy data
@@ -145,6 +150,16 @@ def show_forms_json():
 def add_form_json():
     print request.json
     form_data.append({'name':'form6',"title":"form 6"})
+    return "eee"
+
+
+@app.route("/admin/set_form_properties",methods=['POST'])
+def set_form_properties():
+    #print request.json
+    import pdb; pdb.set_trace()
+    data=request.json["data"]
+    val=mongo.db["test_data"].update({'_id': ObjectId(row_id)},  data)
+    
     return "eee"
 
 

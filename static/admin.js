@@ -19,6 +19,7 @@ function PhoneListCtrl($scope, $http) {
 
 function DbFieldController($scope,$http) {
     $scope.master= [];
+    $scope.formProps={};
     //$scope.formProps.form_type={id:"single_record"};
     
 
@@ -29,6 +30,23 @@ function DbFieldController($scope,$http) {
         $scope.dbField ={};
         $scope.showAddField=false;
     };
+    
+    $scope.set_form_properties = function() {
+        console.log("set_form_properties");
+        $scope.showFormProperties=!$scope.showFormProperties;
+        $http.post('/admin/set_form_properties/', $scope.formProps).
+        success(function(data, status, headers, config) {
+            
+            console.log("success form props");
+
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+
+        
+    }
+    
     
     $scope.set_data = function(field_name) {
         console.log(field_name);
