@@ -10,7 +10,7 @@ from bson.objectid import ObjectId
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-#form_data=[{'name':'form1',"title":"form 1",'fields':[{ }] }]
+form_data=[{'name':'form1',"title":"form 1",'fields':[{ }] }]
 
 forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","title":"field 1","type":"text"},{"name":"field2","title":"field 2","type":"text"}] }]
 
@@ -135,35 +135,85 @@ def get_all(form_name):
 def admin():
     return render_template('admin_menu.html')
     
-@app.route("/admin/forms")
-def admin_form():
+@app.route("/admin/forms/<form_name>/")
+def admin_form(form_name):
     return render_template('admin.html')
 
 
 @app.route("/admin/form_list")
 def show_forms_json():
-    #TODO: replace with dynamic not dymmy data
-    #form_data.append({'name':'form6',"title":"form 6"})
-    return json.dumps(form_data)
+    forms_list = mongo.db["forms"].find()
+    json_docs=json.dumps(list(forms_list), default=json_util.default)
+    return json_docs 
+    
+    
 
 @app.route("/admin/add_form",methods=['POST'])
 def add_form_json():
     print request.json
     form_data.append({'name':'form6',"title":"form 6"})
-    return "eee"
+    return "success"
+
+@app.route("/admin/show_field_form/")
+def show_field_form():
+    # TODO: make template as a directive, not include
+    return render_template('form_field.html') 
 
 
-@app.route("/admin/set_form_properties",methods=['POST'])
+        
+@app.route("/admin/set_form_properties/",methods=['POST'])
 def set_form_properties():
     #print request.json
-    import pdb; pdb.set_trace()
     data=request.json["data"]
-    val=mongo.db["test_data"].update({'_id': ObjectId(row_id)},  data)
     
-    return "eee"
+    if "id" in request.json:
+        form_id=request.json["id"]
+        del data["_id"] 
+        val=mongo.db["forms"].update({'_id': ObjectId(form_id)},  data)
+        #import pdb; pdb.set_trace()
+        
+        if val["updatedExisting"]:
+            return form_id
+        else:
+            #TODO: return some kind of error
+            return form_id
+        
+    else:
+        val=mongo.db["forms"].insert(data)
+        return str(val)
+        
+@app.route("/admin/get_form_fields/",methods=['POST'])
+def get_form_fields():
+    form_id=request.json["form_id"]
+    fields_list = mongo.db["fields_"+form_id].find()
+    json_docs=json.dumps(list(fields_list), default=json_util.default)
+    return json_docs 
+        
+        
+@app.route("/admin/set_field_properties/",methods=['POST'])
+def set_field_properties():
+    data=request.json["data"]
+    #import pdb; pdb.set_trace()
 
-
-
+    form_id=request.json["form_id"]
+    
+    if "id" in request.json:
+        field_id=request.json["id"]
+        del data["_id"] 
+        val=mongo.db["fields_"+form_id].update({'_id': ObjectId(field_id)},  data)
+        
+        if val["updatedExisting"]:
+            return json.dumps({"operation":"update","success":True,"id":field_id })
+        else:
+            #TODO: return some kind of error
+            return json.dumps({"operation":"update","success":False,"id":field_id })
+        
+    else:
+        data["form_id"]=form_id;
+        val=mongo.db["fields_"+form_id].insert(data)
+        return json.dumps({"operation":"insert","success":True,"id":str(val)})
+    
+    return json.dumps({"operation":"failure","success":False })
 
 
 if __name__ == "__main__":

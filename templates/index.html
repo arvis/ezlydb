@@ -6,16 +6,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
 
-<script src="http://code.angularjs.org/1.1.5/angular.min.js"></script>
-<script src="http://code.angularjs.org/1.1.5/angular-resource.js"></script>
+<script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
+<script src="http://code.angularjs.org/1.0.8/angular-resource.js"></script>
     
 <script src="/static/ang.js" ></script>
+<script src="/static/admin.js" ></script>
     
 </head>
 
 <body>
 <div class="container">        
+</p>
+<nav class="navbar navbar-inverse" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <a class="navbar-brand" href="#">Project </a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      
+      <li class="active" class="dropdown" ng-controller="FormListController" >
+          <a id="drop4" role="button" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-list"></span> Forms <b class="caret"></b></a>
+          <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4" >
+            <li role="presentation" ng-repeat="form in forms_list"  ><a role="menuitem" tabindex="-1" href="#" ng-click="formMenuClick(form)" > {{ form.title }}</a></li>
+          </ul>
+        </li>
+        
+      <li><a href="/admin"><span class="glyphicon glyphicon-list-alt"></span> Reports</a></li>
+      <li><a href="/admin"><span class="glyphicon glyphicon-user"></span> Users</a></li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</nav>
+
+
+
+
 <div ng-controller="SingleFormController">
+    
+
 <h3>{{ form_name }}</h3>
     
 
@@ -33,9 +63,12 @@
   
   
 </div>  
+
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+
   
 </body>  
-  
-
 </html>
 {% endraw %}

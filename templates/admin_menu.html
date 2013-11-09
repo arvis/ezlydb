@@ -13,7 +13,7 @@
     
     </head>
     <body>
-<div class="container" ng-controller="FormListCtrl">        
+<div class="container" ng-controller="FormListController">        
 
 
         
@@ -36,13 +36,19 @@
   </div><!-- /.navbar-collapse -->
 </nav>
 
-     <a href="/admin/forms" class="btn btn-primary btn-s"> <span class="glyphicon glyphicon-plus"></span> Add new form...</a> 
+<div class="col-xs-6 col-md-3">
      
     <ul class="list-group" >
-        <li class="list-group-item" ng-repeat="field in forms_list">
-            <span class="glyphicon glyphicon-list"></span>  {{field.title}}  
+        <li class="list-group-item"><a href="#" ng-click="formMenuClick()"><span class="glyphicon glyphicon-plus"> </span> <b>Add new form...</b></a></li>
+        
+        <li class="list-group-item"  ng-repeat="form in forms_list">
+            <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="formMenuClick(form)">{{form.title}}</a>
         </li>    
     </ul>
+
+</div>
+
+    <div class="col-xs-12 col-sm-6 col-md-9" ng-include="'/admin/forms/'+form_name" ></div>
 
 
 

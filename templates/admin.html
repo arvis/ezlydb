@@ -1,42 +1,9 @@
 {% raw %}
-<html ng-app>
-<head>
-<title>EasyDb</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
-
-<script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
-    
-<script src="/static/admin.js" ></script>
-    
-</head>
-<body>
-    <p>
-<div class="container" >        
-
-<nav class="navbar navbar-inverse" role="navigation">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-    <a class="navbar-brand" href="#">Admin </a>
-  </div>
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav">
-      <li class="active"><a  href="/admin"><span class="glyphicon glyphicon-list"></span> Forms</a></li>
-      <li><a href="/admin"><span class="glyphicon glyphicon-list-alt"></span> Reports</a></li>
-      <li><a href="/admin"><span class="glyphicon glyphicon-user"></span> Users</a></li>
-    </ul>
-  </div><!-- /.navbar-collapse -->
-</nav>
-
-
 <div ng-controller="DbFieldController">
+<div ng-show="showFieldList">
 <h1>Form {{ formProps.title }}
   <span class="pull-right" >   
   <button type="button"  ng-click="showFormProperties=!showFormProperties" class="btn btn-default btn-xs">Click to edit form properties</button> 
-    <button type="button" class="btn btn-info btn-s" ng-click="post_form_data()"><span class="glyphicon glyphicon-floppy-disk"></span> Save</button>
   </span>
 </h1>
 
@@ -44,7 +11,7 @@
      
     <form role="form" novalidate class="css-form">
     <div class="form-group">
-        <input type="text" class="form-control" id="form_id" placeholder="Enter form title" ng-model="formProps.id" required />
+        <input type="text" class="form-control" id="form_id" placeholder="Enter form title" ng-model="formProps.name" required />
         
         <label for="name">Title</label>
         <input type="text" class="form-control" id="form_title" placeholder="Enter form title" ng-model="formProps.title" required />
@@ -53,6 +20,7 @@
           <option value="single_record" selected>Single record</option>
           <option value="grid">Grid</option>
         </select>
+        <input type="text" readonly class="form-control" id="form_id" placeholder="dont edit, id" ng-model="formProps.id" />
 
 
     </div>      
@@ -65,50 +33,25 @@
 
 <div class="well">
     <ul class="list-group" >
-        <li class="list-group-item" ng-repeat="field in master "  >
-            {{field.name}}  
+        <li class="list-group-item" ng-repeat="dbField in master "  >
+            {{dbField.name}}    
               <span class="pull-right" >   
-              <button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">click to edit</button>
+              <button type="button" ng-click="dbField.editorEnabled=!dbField.editorEnabled" class="btn btn-info btn-xs">click to edit</button>
               </span>
-             <div ng-show="field.editorEnabled">
-                <input type="text" ng-model="field.name"  />
-              <a href="#" ng-click="field.editorEnabled=!field.editorEnabled">Done editing?</a>
+             <div ng-show="dbField.editorEnabled">
+                <div ng-include="'/admin/show_field_form/'" ></div>
             </div>
     
     </ul>
 
-    <button type="button"  ng-click="showAddField=!showAddField" class="btn btn-success">Add new field</button> 
+    <div ng-show="showAddFieldButton">        
+        <button type="button"  ng-click="showAddField=!showAddField" class="btn btn-success">Add new field</button> 
+    </div>
 
     <div ng-show="showAddField">        
-        <h3>Field properties </h3>
-          <form role="form" novalidate class="css-form">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter field name" ng-model="dbField.name" required />
+            <div ng-include="'/admin/show_field_form/'" ></div>
 
-                <label for="field_type">Field type</label>
-                <select class="form-control" id="field_type" ng-model="dbField.field_type">
-                  <option value="text_field">Text</option>
-                  <option value="int_field">Integer</option>
-                  <option value="float_field">Float</option>
-                  <option value="date_field">Date</option>
-                </select>
-                
-                <label for="name">Default value</label>
-                <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
-                
-                <div class="form-row" data-ng-switch on="dbField.field_type">
-                    <div data-ng-switch-when="text_field">
-                    Text data: <input type="text"  />
-                    </div>
-                    <div data-ng-switch-when="date_field">
-                        Date: <input type="text"  />
-                    </div>
-                </div>
-            </div>      
-            
-            <button type="button" class="btn btn-success" ng-click="add(dbField)">Submit</button>
-          </form>
+          
     </div>
     
 
@@ -128,6 +71,5 @@
     </div>
 
 </div>    
-</body>
-</html>
+</div>
 {% endraw %}
