@@ -15,7 +15,7 @@
 </head>
 
 <body>
-<div class="container">        
+<div class="container" ng-controller="RootFrontController">        
 </p>
 <nav class="navbar navbar-inverse" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
@@ -30,7 +30,7 @@
       <li class="active" class="dropdown" ng-controller="FormListController" >
           <a id="drop4" role="button" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-list"></span> Forms <b class="caret"></b></a>
           <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4" >
-            <li role="presentation" ng-repeat="form in forms_list"  ><a role="menuitem" tabindex="-1" href="#" ng-click="formMenuClick(form)" > {{ form.title }}</a></li>
+            <li role="presentation" ng-repeat="form in forms_list"  ><a role="menuitem" tabindex="-1" href="#" ng-click="formMenuToRoot(form)" > {{ form.title }}</a></li>
           </ul>
         </li>
         
@@ -49,13 +49,8 @@
 <h3>{{ form_name }}</h3>
     
 
-    <div data-ng-include data-src="'/show_list/{{form_name}}'"></div>
+    <div ng-include="'/show_list/'+form_name"></div>
     <p>
-
-    <div class="well" data-ng-include data-src="'/show_form/{{form_name}}'"></div>
-    
-     <pre>data = {{data | json}}</pre>      
-      <pre>formProps = {{formProps | json}}</pre>      
     
     
 </div>

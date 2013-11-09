@@ -11,6 +11,7 @@
         
  <div ng-show="field.editorEnabled">
         <form ng-submit="update_row(field)" class="form-horizontal" role="form">
+         <input type="text" class="form-control" id="field.id" placeholder="id field" ng-model="field._id.$oid" readonly >   
         {% for form_item in form_data %}
         <div class="form-group">
             <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
@@ -26,8 +27,22 @@
   </div>    
     </form>
 </div>    
-    
-    
       
   </li>
 </ul>
+
+    <form ng-submit="update_row(field)" class="form-horizontal" role="form">
+    {% for form_item in form_data %}
+    <div class="form-group">
+        <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+        </div>
+    </div>
+    {% endfor %}
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </div>    
+    </form>

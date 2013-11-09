@@ -19,113 +19,89 @@ forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","title":"f
 def main():
     return render_template('index.html')
 
+@app.route("/show_list/<form_name>",methods=['GET'])
+def show_list(form_name):
+    #find in forms by form_name
+    form = mongo.db["forms"].find_one({"name": form_name})
     
+    if form is None:
+        return ""
+
+    #get forms oid
+    if "_id" in form:
+        field_data = list(mongo.db["fields_"+str(form["_id"])].find())
+        #import pdb; pdb.set_trace()
+
+        return render_template('data_list.html',form_data=field_data)
+    
+    else:
+        #raise 404 or something
+        return ""
+    
+    # get fields list and render
+
+
+
+
+@app.route("/post_data/",methods=['POST'])
+def post_data():
+    data=request.json["data"]
+    form_name=request.json["form_name"]
+    #row_id=request.json["id"]
+    
+    #TODO: check if this user is allowed to post here
+    
+    if "id" in request.json:
+        row_id=request.json["id"]
+        if "_id" in data:
+            del data["_id"] 
+        val=mongo.db["data_"+form_name].update({'_id': ObjectId(row_id)},  data)
+        return "success"
+        
+        if val["updatedExisting"]:
+            return form_id
+        else:
+            #TODO: return some kind of error
+            return form_id
+        
+    else:
+        val=mongo.db["data_"+form_name].insert(data)
+        return str(val)
+
+    
+    
+    #TODO: check if that element exists
+    del data["_id"] 
+
+
+@app.route("/data/<form_name>",methods=['GET'])
+def get_all(form_name):
+    docs = mongo.db["data_"+form_name].find()
+    json_docs=json.dumps(list(docs), default=json_util.default)
+    return json_docs 
+
+
+    
+@app.route("/delete_row/",methods=['POST'])
+def delete_row():
+    row_id=request.json["id"]
+    form_name=request.json["form_name"]
+
+    
+    ret = mongo.db["data_"+form_name].remove({'_id': ObjectId(row_id)} );
+    return "success"
+
+
+
 @app.route("/my_form")
 def mock_form():
     return render_template('mock_form.html')
-    
-
-def render_form_header(form_data):
-    form_head= "<h3> %s </h3>" % (form_data["title"])
-    form_head+='<form ng-submit="add_row()">'
-    return form_head
-
-def render_form_footer():
-    return '<input type="submit" class="btn btn-default" value="Submit">'
-
-
-def render_input(data):
-    input_data='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required />' % (data["name"],data["name"],data["name"], )
-    return input_data
-    
-    
-def render_row_buttons():
-    out='<button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">edit</button>'    
-    out+=' <button type="button" ng-click="delete_row(field,$index)" class="btn btn-danger btn-xs">delete</button>'    
-    return out
-
-def render_form(form_id):
-    form_data=forms_list[0]
-    form_output=render_form_header(form_data)
-    for field in form_data["data"]:
-        form_output+=render_input(field)
-    form_output+=render_form_footer()
-    return form_output
-
-
-def render_list_definition(form_name):
-    form_data=forms_list[0]
-
-    
-    buttons=render_row_buttons()
-    output='<table class="table"><tr>'
-    for field in form_data["data"]:
-        output+='<th> %s </th>' % (field["name"] )
-    
-    output+='<th></th>'
-    output+='</tr><tr ng-repeat="field in data ">'
-    output+='<td ng-bind="field._id.$oid "> </td>' 
-    for field in form_data["data"]:
-        output+='<td ng-bind="field.%s"> </td>' % (field["name"] )
-    
-    output+= "<td>"+buttons+"</td>"
-    output+= "</tr></table>"
-    return output 
-    
-def render_list_head(form_name):
-    pass
-
-@app.route("/show_list/<form_name>",methods=['GET'])
-def show_list(form_name):
-    return render_template('data_list.html',form_data=forms_list[0]["data"])
 
 
 @app.route("/tmp_show/",methods=['GET'])
 def tmp_show_list(form_name):
     out=render_list_definition(form_name)
     return out
-
-
-
-@app.route("/show_form/<form_name>",methods=['GET'])
-def show_form(form_name):
-    form_data=render_form(form_name)
-    return form_data
-
-
-
-@app.route("/post_data/",methods=['POST'])
-def update_row():
-    data=request.json["data"]
-    row_id=request.json["id"]
-
-    #TODO: check if that element exists
-    del data["_id"] 
-
-    val=mongo.db["test_data"].update({'_id': ObjectId(row_id)},  data)
-    #import pdb; pdb.set_trace()
-    return "success"
-    
-@app.route("/add_row/",methods=['POST'])
-def add_row():
-    data=request.json["data"]
-    mongo.db["test_data"].insert(data)
-    return "success"
-
-    
-@app.route("/delete_row/",methods=['POST'])
-def delete_row():
-    data=request.json
-    
-    ret = mongo.db["test_data"].remove({'_id': ObjectId(data["id"])} );
-    return "success"
-
-
-@app.route("/data/<form_name>",methods=['GET'])
-def get_all(form_name):
-    docs = mongo.db["test_data"].find()
-    json_docs=json.dumps(list(docs), default=json_util.default)
-    return json_docs 
 
 
 #--------------------------

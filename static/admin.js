@@ -1,3 +1,5 @@
+
+
 function FormListController($scope, $http) {
   $scope.form_name="new";
   $scope.show_form=false;
@@ -6,8 +8,13 @@ function FormListController($scope, $http) {
   });
 
     $scope.formMenuClick = function(param) {
+        //console.log("formMenuClick");
         //if (!param) param={};
         $scope.$broadcast('formMenuClick',param);
+    };
+ 
+    $scope.formMenuToRoot = function(param) {
+        $scope.$emit('formMenuClick',param);
     };
  
  

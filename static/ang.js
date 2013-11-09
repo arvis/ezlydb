@@ -1,18 +1,39 @@
+
+function RootFrontController($scope, $http) {
+    
+    $scope.$on('formMenuClick', function($sc,param) {
+        console.log('RootFrontController');
+        $scope.$broadcast('formClickonChild',param);
+    });
+}
+
  
 function SingleFormController($scope, $http) {
-  //$scope.data=[];  
-  $scope.form_name="sample_form_name";  
-  $scope.field={};
+    
+  $scope.form_name="";  
+  $scope.form_id="";  
   
-  $http.get('data/aaa').success(function(data) {
-    $scope.data = data;
-    console.log(data[1]._id.$oid)
-  });
+  $scope.field={};
+
+    $scope.$on('formClickonChild', function($sc,param) {
+        //console.log(param);
+        $scope.form_name=param.name;
+        $scope.form_id=param._id.$oid;
+        
+        
+        $http.get('data/'+$scope.form_id).success(function(data) {
+            $scope.data = data;
+            //console.log(data[1]._id.$oid)
+        });
+        
+    });
 
   $scope.delete_row=function(row, index){
 
     var data={};
     data.id=row._id.$oid;
+    data.form_name=$scope.form_id;
+
     console.log(data.id); 
     $http.post('/delete_row/', data).
       success(function(data, status, headers, config) {
@@ -28,16 +49,36 @@ function SingleFormController($scope, $http) {
   }
 
   $scope.update_row=function(row){
-    console.log("update_row");
     var data={};
+    var is_insert=true;
+    
+    if (row._id){
+        data.id=row._id.$oid;
+        //delete row._id;
+        is_insert=false;
+    }
+    //row.editorEnabled=false;
+    delete row.editorEnabled;
+            
     data.data=row;
-    data.id=row._id.$oid;
-    console.log(data.id); 
+    data.form_name=$scope.form_id;
     
     $http.post('/post_data/', data).
-      success(function(data, status, headers, config) {
-          $scope.formProps={};
+      success(function(return_data, status, headers, config) {
+          //$scope.formProps={};
           console.log("success");
+          if (is_insert) {
+              row._id={};
+              row._id.$oid=return_data;
+              $scope.data.push(row);
+              row={};
+              $scope.field={};
+          }
+          else {
+              row._id={};
+              row._id.$oid=data.id;
+          }
+          
           
       }).
       error(function(data, status, headers, config) {
@@ -98,8 +139,6 @@ function SingleFormController($scope, $http) {
     
 }
  
-//PhoneListCtrl.$inject = ['$scope', '$http'];
-
 
 function Controller($scope) {
   $scope.master= {};
