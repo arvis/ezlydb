@@ -121,14 +121,7 @@ def show_forms_json():
     forms_list = mongo.db["forms"].find()
     json_docs=json.dumps(list(forms_list), default=json_util.default)
     return json_docs 
-    
-    
 
-@app.route("/admin/add_form",methods=['POST'])
-def add_form_json():
-    print request.json
-    form_data.append({'name':'form6',"title":"form 6"})
-    return "success"
 
 @app.route("/admin/show_field_form/")
 def show_field_form():
@@ -190,6 +183,37 @@ def set_field_properties():
         return json.dumps({"operation":"insert","success":True,"id":str(val)})
     
     return json.dumps({"operation":"failure","success":False })
+
+
+@app.route("/admin/reports/",methods=['GET'])
+def show_reports():
+    return render_template('admin_reports.html')
+    
+@app.route("/admin/save_report/",methods=['POST'])
+def save_report():
+    data={}
+    data=request.json
+    
+    
+    if "id" in request.json:
+        report_id=request.json["id"]
+        del data["id"] 
+        
+        val=mongo.db["reports_"].update({'_id': ObjectId(report_id)},  data)
+        
+        if val["updatedExisting"]:
+            return json.dumps({"operation":"update","success":True,"id":report_id })
+        else:
+            #TODO: return some kind of error
+            return json.dumps({"operation":"update","success":False,"id":report_id })
+        
+    else:
+        val=mongo.db["reports"].insert(data)
+        return json.dumps({"operation":"insert","success":True,"id":str(val)})
+    
+    return json.dumps({"operation":"failure","success":False })
+    
+    
 
 
 if __name__ == "__main__":

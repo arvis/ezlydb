@@ -3,17 +3,21 @@
 function FormListController($scope, $http) {
   $scope.form_name="new";
   $scope.show_form=false;
+  $scope.current_form={};
+  
   $http.get('/admin/form_list').success(function(data) {
     $scope.forms_list = data;
   });
 
     $scope.formMenuClick = function(param) {
         //console.log("formMenuClick");
-        //if (!param) param={};
         $scope.$broadcast('formMenuClick',param);
     };
  
     $scope.formMenuToRoot = function(param) {
+        if (!param){
+            param=$scope.current_form;
+        }
         $scope.$emit('formMenuClick',param);
     };
  
@@ -157,13 +161,86 @@ function DbFieldController($scope,$http) {
             console.log("data saved");
         });     
     };
-    
-    
-    
 
     $scope.reset = function() {
         $scope.user = angular.copy($scope.master);
     };
 
     $scope.reset();
+}
+
+
+function ReportAdminController($scope, $http) {
+  $scope.field_list="new";
+  $scope.sums_for_numbers=false; // does summing for number fields needs to be done
+  $scope.report_name="my report";
+  $scope.report_title="click here to edit report title";
+  $scope.report_footer="click here to edit footer";
+  $scope.report_id="";
+  $scope.form_id="";
+  
+  
+  $http.get('/admin/form_list').success(function(data) {
+    $scope.forms_list = data;
+  });
+
+    $scope.formMenuClick = function(param) {
+        $scope.$broadcast('formMenuClick',param);
+    };
+ 
+    $scope.$on('formMenuClick', function($sc,param) {
+        var form_data={};
+        form_data["form_id"]=param._id.$oid;
+        $scope.form_id=param._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', form_data).success(function(data) {
+            $scope.field_list = data;
+            $scope.showReport=true;
+            $scope.report_name=param.title+" report";
+            $scope.report_title=param.title+" report";
+            
+        });     
+    });
+    
+    $scope.saveReport = function() {
+        console.log("saveReport");
+        
+        data={};
+        
+        //data["report_id"]=$scope.report_id;
+        
+        data["fields"]=[];
+        var field_data = [];
+        angular.forEach($scope.field_list, function(value, key){
+            //console.log(value);
+            this.push(value._id.$oid);
+        }, data["fields"]);
+        
+        data["form_id"]=$scope.form_id;
+        data["report_title"]=$scope.report_title;
+        
+        
+        // if default footer, save empty
+        if ($scope.report_footer=="click here to edit footer"){
+            data["report_footer"]="";
+        }
+        else {
+            data["report_footer"]=$scope.report_footer;
+        }
+
+        
+        $http.post('/admin/save_report/', data).
+        success(function(return_data, status, headers, config) {
+            
+            if (!$scope.report_id){
+                $scope.report_id=return_data["id"];
+            }
+            $scope.showSuccess=true;
+
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });        
+    }
+    
 }
