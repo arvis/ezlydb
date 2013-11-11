@@ -188,6 +188,12 @@ def set_field_properties():
 @app.route("/admin/reports/",methods=['GET'])
 def show_reports():
     return render_template('admin_reports.html')
+
+@app.route("/admin/report_list")
+def show_report_list():
+    reports_list = mongo.db["reports"].find()
+    json_docs=json.dumps(list(reports_list), default=json_util.default)
+    return json_docs 
     
 @app.route("/admin/save_report/",methods=['POST'])
 def save_report():

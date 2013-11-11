@@ -3,145 +3,145 @@
 <html ng-app>
 <head>
 
-<title>EasyDb</title>
+  <title>EasyDb</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
-    <script src="/static/admin.js" ></script>
-   
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
+  <script src="/static/admin.js" ></script>
+  
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
-<script>
+  <script>
   $(function() {
     $( ".column" ).sortable({
       connectWith: ".column"
     });
- 
- 
+    
+    
     $( ".column" ).disableSelection();
   });
-</script>
+  </script>
+
+  
+</head>
+<body>
+  <div class="container" ng-controller="ReportAdminController">        
+
 
     
-    </head>
-    <body>
-<div class="container" ng-controller="ReportAdminController">        
+    <h1>Project administration <button type="button"  ng-click="showProjectEdit=!showProjectEdit" class="btn btn-info btn-xs">click to edit</button></h1>
 
 
-        
-<h1>Project administration <button type="button"  ng-click="showProjectEdit=!showProjectEdit" class="btn btn-info btn-xs">click to edit</button></h1>
+    <nav class="navbar navbar-inverse" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Admin </a>
+      </div>
 
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav">
+          <li ><a  href="/admin/"><span class="glyphicon glyphicon-list"></span> Forms</a></li>
+          <li class="active"><a href="/admin/reports/"><span class="glyphicon glyphicon-list-alt"></span> Reports</a></li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </nav>
 
-<nav class="navbar navbar-inverse" role="navigation">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <div class="navbar-header">
-    <a class="navbar-brand" href="#">Admin </a>
-  </div>
-
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav">
-      <li ><a  href="/admin/"><span class="glyphicon glyphicon-list"></span> Forms</a></li>
-      <li class="active"><a href="/admin/reports/"><span class="glyphicon glyphicon-list-alt"></span> Reports</a></li>
-    </ul>
-  </div><!-- /.navbar-collapse -->
-</nav>
-
-<div class="col-xs-6 col-md-3">
+    <div class="col-xs-6 col-md-3"  ng-controller="ReportListController">
      
-    <ul class="list-group" >
-        <li class="list-group-item"><a href="#" ng-click="formMenuClick()"><span class="glyphicon glyphicon-plus"> </span> <b>Add new report...</b></a></li>
+      <ul class="list-group" >
+        <li class="list-group-item"><a href="/admin/reports/" ><span class="glyphicon glyphicon-plus"> </span> <b>Add new report...</b></a></li>
         
         <li class="list-group-item"  ng-repeat="report in report_list">
-            <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="formMenuClick(form)">Report1</a>
+          <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="reportMenuToRoot(report)">{{ report.report_title }}</a>
         </li>    
-    </ul>
+      </ul>
 
-</div>
+    </div>
 
-<div class="col-xs-12 col-sm-6 col-md-9" >
+    <div class="col-xs-12 col-sm-6 col-md-9" >
 
-<div class="row">
-    <form class="form-inline" ng-controller="FormListController" role="form">
-      <div class="form-group">
-        <label for="base_form" class="control-label">Base form:  </label>
-      </div>
-      <div class="form-group"></div>
-      <div class="form-group">
-          <select id="base_form" ng-model="current_form" ng-change="formMenuToRoot(form)" ng-options="form.title for form in forms_list" 
-                class="form-control" name="baseForm"  id="baseForm" placeholder="Choose form to get data from">
-            </select>
-      </div>
-      <div class="form-group pull-right" >
+      <div class="row">
+        <form class="form-inline" ng-controller="FormListController" role="form">
+          <div class="form-group">
+            <label for="base_form" class="control-label">Base form:  </label>
+          </div>
+          <div class="form-group"></div>
+          <div class="form-group" class="col-md-9">
+            <select id="base_form" ng-model="current_form" ng-change="formMenuToRoot(form)" ng-options="form.title for form in forms_list" 
+            class="form-control" name="baseForm" >
+          </select>
+        </div>
+        <div class="form-group pull-right" >
           <button ng-show="showReport" ng-click="saveReport()" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save</button>
-      </div>
-    </form>
-    
-</div>
+        </div>
+      </form>
+      
+    </div>
 
-<div class="row" ng-show="showSuccess">
-    <div class="alert alert-success fade in">
+    <div class="row" ng-show="showSuccess">
+      <div class="alert alert-success fade in">
         <button type="button" class="close" data-dismiss="alert" ng-click="showSuccess=false" aria-hidden="true">×</button>
         <strong>Save successfull.</strong>
-    </div>
-</div>
-
-<div ng-show="showReport">
-
-
-<div class="row" style="border-style:dashed;border-width:1px;"> <center><h1  ng-click="editTitle=!editTitle" ng-show="!editTitle" >{{ report_title }}</h1>   
-
-<form class="form-inline" ng-show="editTitle" role="form">
-  <div class="form-group">
-    <label class="sr-only" for="report_title">Title:</label>
-    <input type="text" ng-model="report_title"  class="form-control" id="report_title" placeholder="Enter title">
-  </div>
-  <button ng-click="editTitle=false;"  class="btn btn-default">Done</button>
-</form>
-
-</center></div>
-    
-<div class="row" id="report_data" style="border-style:dashed;border-width:1px; height:'200px'; ">
-    
-    
-<div class="column">
- 
-  <div style="border-style:solid;border-width:1px; " class="col-sm-2" ng-repeat="field in field_list">
-      {{ field.name }} <button type="button" class="close" ng-click="field_list.splice($index, 1)" aria-hidden="true">&times;</button>
-  </div>
- 
- 
-</div>    
-    
-    
-    
-</div>
-<div class="row" style="border-style:dashed;border-width:1px;"> <center> <span ng-click="editFooter=!editFooter" ng-show="!editFooter">{{ report_footer }}</span>
-
-<form class="form-inline" ng-show="editFooter" role="form">
-  <div class="form-group">
-    <label class="sr-only" for="report_footer">Footer text:</label>
-    <input type="text" ng-model="report_footer"  class="form-control" id="report_footer" placeholder="Enter footer data">
-  </div>
-  <button ng-click="editFooter=false;"  class="btn btn-default">Done</button>
-</form>
-
-
-</center> </div>
-    
+      </div>
     </div>
 
+    <div ng-show="showReport">
 
 
-</div>    
+      <div class="row" style="border-style:dashed;border-width:1px;"> <center><h1  ng-click="editTitle=!editTitle" ng-show="!editTitle" >{{ report_title }}</h1>   
+
+        <form class="form-inline" ng-show="editTitle" role="form">
+          <div class="form-group">
+            <label class="sr-only" for="report_title">Title:</label>
+            <input type="text" ng-model="report_title"  class="form-control" id="report_title" placeholder="Enter title">
+          </div>
+          <button ng-click="editTitle=false;"  class="btn btn-default">Done</button>
+        </form>
+
+      </center></div>
+      
+      <div class="row" id="report_data" style="border-style:dashed;border-width:1px; height:'200px'; ">
+        
+        
+        <div class="column">
+         
+          <div style="border-style:solid;border-width:1px; " class="col-sm-2" ng-repeat="field in field_list">
+            {{ field.name }} <button type="button" class="close" ng-click="field_list.splice($index, 1)" aria-hidden="true">&times;</button>
+          </div>
+          
+          
+        </div>    
+        
+        
+        
+      </div>
+      <div class="row" style="border-style:dashed;border-width:1px;"> <center> <span ng-click="editFooter=!editFooter" ng-show="!editFooter">{{ report_footer }}</span>
+
+        <form class="form-inline" ng-show="editFooter" role="form">
+          <div class="form-group">
+            <label class="sr-only" for="report_footer">Footer text:</label>
+            <input type="text" ng-model="report_footer"  class="form-control" id="report_footer" placeholder="Enter footer data">
+          </div>
+          <button ng-click="editFooter=false;"  class="btn btn-default">Done</button>
+        </form>
+
+
+      </center> </div>
+      
+    </div>
+
+
+
+  </div>    
 
 </div>
 
 </body>
-    
+
 
 </html>
 {% endraw %}
