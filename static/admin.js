@@ -34,6 +34,7 @@ function ReportListController($scope, $http) {
   
   $http.get('/admin/report_list').success(function(data) {
     $scope.report_list = data;
+    console.log($scope.report_list);
   });
 
     $scope.reportMenuClick = function(param) {
@@ -54,6 +55,7 @@ function DbFieldController($scope,$http) {
     $scope.formProps={};
     $scope.showFieldList=false;
     $scope.showAddFieldButton=false;
+    $scope.dbField={};
     
     //$scope.formProps.form_type={id:"single_record"};
 
@@ -162,7 +164,7 @@ function DbFieldController($scope,$http) {
         success(function(data, status, headers, config) {
             console.log("success form props"+data);
             $scope.formProps.id=data;
-            $scope.showAddFieldButton=false;
+            $scope.showAddFieldButton=true;
 
         }).
         error(function(data, status, headers, config) {

@@ -74,12 +74,33 @@ def post_data():
     del data["_id"] 
 
 
-@app.route("/data/<form_name>",methods=['GET'])
+@app.route("/data/<form_name>/",methods=['GET'])
 def get_all(form_name):
     docs = mongo.db["data_"+form_name].find()
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
 
+# ------------------------
+# reports
+
+@app.route("/show_report/<report_name>/",methods=['GET'])
+def show_report(report_name):
+    report = mongo.db["reports"].find_one({'_id': ObjectId(report_name)})
+    
+    if report is None:
+        return ""
+
+    return render_template('report_fields.html',report=report,report_fields=report["fields"])
+    
+
+@app.route("/report_data/<report_name>/",methods=['GET'])
+def report_data(report_name):
+    report = mongo.db["reports"].find_one({'_id': ObjectId(report_name)})
+    
+
+    docs = mongo.db["data_"+report["form_id"]].find()
+    json_docs=json.dumps(list(docs), default=json_util.default)
+    return json_docs 
 
     
 @app.route("/delete_row/",methods=['POST'])

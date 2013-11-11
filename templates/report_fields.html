@@ -1,0 +1,28 @@
+
+<h1>{{  report.report_title }}</h1>
+
+<p>
+<table class="table table-striped">
+<thead>
+<tr>
+{% for item in report["fields"]  %}
+
+<th>{{ item.name }}</th>
+
+{% endfor %}
+ </tr>
+</thead>
+<tbody>
+<tr ng-repeat="row in data">
+{% for item in report["fields"]  %}
+<td ng-bind="row.{{ item.name }}">  </td> 
+{% endfor %}
+
+</tr>
+
+</tbody>
+
+</table>
+
+</p>
+{{  report.report_footer }}

@@ -1,12 +1,45 @@
 
 function RootFrontController($scope, $http) {
+    $scope.showForm=false;
+    $scope.showReport=false;
     
     $scope.$on('formMenuClick', function($sc,param) {
-        console.log('RootFrontController');
+        $scope.showForm=true;
+        $scope.showReport=false;
+        
         $scope.$broadcast('formClickonChild',param);
     });
+
+    $scope.$on('reportMenuClick', function($sc,param) {
+        console.log('reportMenuClick');
+        $scope.showForm=true;
+        $scope.showReport=false;
+        
+        $scope.$broadcast('reportClickonChild',param);
+    });
+    
+    
 }
 
+function ReportController($scope, $http) {
+    $scope.form_name="";
+    $scope.form_id="";
+    $scope.data=[];
+
+    $scope.$on('reportClickonChild', function($sc,param) {
+        //console.log(param);
+        $scope.report_name=param.name;
+        $scope.report_id=param._id.$oid;
+        
+        
+        $http.get('report_data/'+$scope.report_id).success(function(data) {
+            $scope.data = data;
+        });
+        
+    });
+
+
+}
  
 function SingleFormController($scope, $http) {
     

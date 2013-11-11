@@ -14,9 +14,9 @@
          <input type="text" class="form-control" id="field.id" placeholder="id field" ng-model="field._id.$oid" readonly >   
         {% for form_item in form_data %}
         <div class="form-group">
-            <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
+            <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.name}}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+              <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.name}}" ng-model="field.{{form_item.name}}" required>
             </div>
         </div>
     {% endfor %}
@@ -30,13 +30,13 @@
       
   </li>
 </ul>
-
+<h3>Add new record</h3>
     <form ng-submit="update_row(field)" class="form-horizontal" role="form">
     {% for form_item in form_data %}
     <div class="form-group">
-        <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
+        <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.name}}</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+          <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.name}}" ng-model="field.{{form_item.name}}" required>
         </div>
     </div>
     {% endfor %}
