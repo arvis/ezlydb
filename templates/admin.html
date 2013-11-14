@@ -56,13 +56,13 @@
     
 
 </div>
-
-      
+     
      <button type="button"  ng-click="showHiddenData=!showHiddenData" class="btn btn-default btn-xs">Show dev data</button> 
      <div ng-show="showHiddenData">
+      
+      <pre>dbfield = {{dbField | json}}</pre>
       <pre>dbfield = {{dbField | json}}</pre>
       <pre>master = {{master | json}}</pre>      
-      <pre>formProps = {{formProps | json}}</pre>      
     </div>
       
       

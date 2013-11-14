@@ -46,14 +46,15 @@
 
 
 
-
 <div ng-show="showForm" ng-controller="SingleFormController">
     <h3>{{ form_name }}</h3>
-    
+    {% endraw %}
     <div ng-include="'/show_list/'+form_name"></div>
+    
+    {% raw %}
 </div>
 
-<div ng-controller="ReportController">
+<div ng-show="showReport" ng-controller="ReportController">
     <div  ng-include="'/show_report/'+report_id"></div>
 </div>
   

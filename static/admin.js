@@ -4,6 +4,7 @@ function FormListController($scope, $http) {
   $scope.form_name="new";
   $scope.show_form=false;
   $scope.current_form={};
+  $scope.field_list={};
   
   $http.get('/admin/form_list').success(function(data) {
     $scope.forms_list = data;
@@ -25,6 +26,32 @@ function FormListController($scope, $http) {
         $scope.current_form=$scope.forms_list[param];
     });
  
+    $scope.getFormFields= function(form) {
+        console.log($scope.current_form);
+        var data={};
+        data.form_id=$scope.current_form._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.field_list=return_data;
+            
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+    }
+    
+    $scope.lookupFieldSet=function(field){
+        param={};
+        param.field_id=$scope.current_field;
+        param.form_id=$scope.current_lookup_form;
+        //$scope.dbField["lookup"]=param;
+        $scope.$emit('lookupFieldSet',param);
+        
+    }
+    
+    
+
  
 }
 
@@ -56,12 +83,22 @@ function DbFieldController($scope,$http) {
     $scope.showFieldList=false;
     $scope.showAddFieldButton=false;
     $scope.dbField={};
-    
-    //$scope.formProps.form_type={id:"single_record"};
+    $scope.lookup={};
+    $scope.forms_list={};
+    $scope.field_list={};
+    $scope.current_lookup_form={};
 
     $scope.load_form = function(param) {
         console.log("load_form "+param);
     };
+
+    $scope.$on('lookupFieldSet',function($sc,param){
+        console.log('++formLookupSelect');
+        $scope.dbField["lookup"]=param;
+        
+        console.log($scope.dbField["lookup"]);
+
+    });
 
     $scope.$on('formMenuClick', function($sc,param) {
         $scope.master= [];
@@ -84,8 +121,41 @@ function DbFieldController($scope,$http) {
         $scope.formProps.name=param.name;
         $scope.showAddFieldButton=true;
 
+        //$scope.get_forms_list();
         $scope.get_form_fields();
     });
+    
+    $scope.getFormLookupFields= function($sc,form) {
+        var data={};
+        console.log(form);
+        console.log($scope.current_lookup_form);
+        return;
+        data.form_id=$scope.current_lookup_form._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.field_list=return_data;
+            
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+    }
+/*
+    $scope.lookupFieldSet=function($sc,field){
+        param={};
+        param.field_id=$scope.current_field;
+        param.form_id=$scope.current_lookup_form;
+        $scope.dbField["lookup"]=param;
+    }
+    
+    $scope.get_forms_list=function(){
+        $http.get('/admin/form_list').success(function(data) {
+            $scope.forms_list = data;
+            $scope.current_lookup_form=data[0];
+      });
+    }
+*/
     
     $scope.get_form_fields= function() {
         
@@ -98,6 +168,13 @@ function DbFieldController($scope,$http) {
         $http.post('/admin/get_form_fields/', data).
         success(function(data, status, headers, config) {
             $scope.master=data;
+            
+/*
+            if (param["field_type"]=="lookup_field"){
+                $scope.current_field=$scope.forms_list[2] ;
+                $scope.current_lookup_form=param.form_id;
+            }
+*/
             
         }).
         error(function(data, status, headers, config) {
@@ -140,7 +217,7 @@ function DbFieldController($scope,$http) {
                 
             }
             $scope.dbField ={};
-            $scope.formProps ={};
+            //$scope.formProps ={};
             $scope.field ={};
         }).
         error(function(data, status, headers, config) {

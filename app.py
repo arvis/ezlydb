@@ -30,15 +30,51 @@ def show_list(form_name):
     #get forms oid
     if "_id" in form:
         field_data = list(mongo.db["fields_"+str(form["_id"])].find())
+        
+        generated_fields=[]
+        for field in field_data:
+            #import pdb; pdb.set_trace()
+            if field["field_type"]=="lookup_field":
+                generated_fields.append(generate_lookup(field))
+            else:
+                generated_fields.append(generate_textfield(field))
+                
+        
+        #for i in range(len(field_data)):
+                
+                
         #import pdb; pdb.set_trace()
 
-        return render_template('data_list.html',form_data=field_data)
+        return render_template('data_list.html',form_data=generated_fields)
     
     else:
         #raise 404 or something
         return ""
     
     # get fields list and render
+
+def generate_textfield(field):
+    retval={}
+    retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    retval["field"]='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required>' % (field["name"],field["name"],field["name"])
+
+    return retval
+
+def generate_lookup(field):
+    values=list(mongo.db["data_"+field["lookup"]["form_id"]].find())
+    ret_field='<select class="form-control">'
+    
+    #import pdb; pdb.set_trace()
+    for value in values:
+        ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) # FIXME: later replace with real reference
+    ret_field+="</select>"
+    
+    retval={}
+    retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    retval["field"]=ret_field
+    
+    return retval
+    
 
 
 
@@ -77,6 +113,7 @@ def post_data():
 @app.route("/data/<form_name>/",methods=['GET'])
 def get_all(form_name):
     docs = mongo.db["data_"+form_name].find()
+    
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
 

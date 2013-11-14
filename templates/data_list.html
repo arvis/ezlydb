@@ -1,3 +1,5 @@
+
+
 <ul class="list-group">
   <li class="list-group-item" ng-repeat="field in data ">
     {% for item in form_data %}
@@ -12,11 +14,11 @@
  <div ng-show="field.editorEnabled">
         <form ng-submit="update_row(field)" class="form-horizontal" role="form">
          <input type="text" class="form-control" id="field.id" placeholder="id field" ng-model="field._id.$oid" readonly >   
-        {% for form_item in form_data %}
+    {% for form_item in form_data %}
         <div class="form-group">
-            <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.name}}</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.name}}" ng-model="field.{{form_item.name}}" required>
+            {{form_item.label|safe}}
+            <div class="col-sm-6">
+                {{form_item.field|safe}}
             </div>
         </div>
     {% endfor %}
@@ -33,12 +35,12 @@
 <h3>Add new record</h3>
     <form ng-submit="update_row(field)" class="form-horizontal" role="form">
     {% for form_item in form_data %}
-    <div class="form-group">
-        <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.name}}</label>
-        <div class="col-sm-10">
-          <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.name}}" ng-model="field.{{form_item.name}}" required>
+        <div class="form-group">
+            {{form_item.label|safe}}
+            <div class="col-sm-6">
+                {{form_item.field|safe}}
+            </div>
         </div>
-    </div>
     {% endfor %}
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
@@ -46,3 +48,4 @@
     </div>
   </div>    
     </form>
+

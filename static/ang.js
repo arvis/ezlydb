@@ -57,9 +57,16 @@ function SingleFormController($scope, $http) {
         $http.get('data/'+$scope.form_id).success(function(data) {
             $scope.data = data;
             //console.log(data[1]._id.$oid)
+            
+            
+            
         });
         
     });
+
+  $scope.get_lookup_values=function(){
+      
+  }
 
   $scope.delete_row=function(row, index){
 

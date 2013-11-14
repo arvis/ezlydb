@@ -12,19 +12,38 @@
           <option value="int_field">Integer</option>
           <option value="float_field">Float</option>
           <option value="date_field">Date</option>
+          <option value="lookup_field">Lookup</option>
+          <option value="calc_field">Calculated field</option>
+          
+          
         </select>
         
         <label for="name">Default value</label>
         <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
-        <input type="text" readonly class="form-control" id="form_id" placeholder="dont edit, id" ng-model="dbField._id.$oid" readonly />
+        <input type="hidden" readonly class="form-control" id="form_id" placeholder="dont edit, id" ng-model="dbField._id.$oid" readonly />
 
         
         <div class="form-row" data-ng-switch on="dbField.field_type">
-            <div data-ng-switch-when="text_field">
-            Text data: <input type="text"  />
+            <div ng-controller="FormListController" data-ng-switch-when="lookup_field">
+                <select id="lookup_form" ng-model="current_form" ng-change="getFormFields($index)" ng-options="form.title for form in forms_list" 
+                    class="form-control" name="lookup_form" >
+                </select>                
+                <select id="lookup_field" ng-model="current_field" ng-change="lookupFieldSet(field)" ng-options="field.name for field in field_list" 
+                    class="form-control" name="lookup_field" >
+                </select>                
             </div>
+            
+            
             <div data-ng-switch-when="date_field">
                 Date format: <input type="text" class="form-control" id="date_format" placeholder="Enter date format" />
+            </div>
+            <div data-ng-switch-when="calc_field">
+                Field to calculate:
+                <select id="calc_field" ng-model="dbField.calc_field" ng-options="calc_field.name for calc_field in master" 
+                    class="form-control" name="lookup_form" >
+                </select>                
+                
+                Formula: <input type="text" ng-model="dbField.calc_formula" class="form-control" id="formula" placeholder="Enter formula, example =+1" />
             </div>
         </div>
     </div>      

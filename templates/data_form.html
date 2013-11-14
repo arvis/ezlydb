@@ -3,7 +3,21 @@
         <div class="form-group">
             <label for="{{form_item.name}}" class="col-sm-2 control-label">{{form_item.title}}</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+              <div data-ng-switch-when="date_field">  
+                    <input type="date" class="form-control" id="{{form_item.name}}" ng-model="field.{{form_item.name}}" required>
+              </div>
+              <div data-ng-switch-when="lookup_field">  
+                <select id="{{form_item.name}}" ng-model="field.{{form_item.name}}" ng-options="calc_field.name for calc_field in master" 
+                    class="form-control" name="field.{{form_item.name}}" >
+                </select>                
+
+              </div>
+              <div data-ng-switch-when="calc_field">  
+                {{form_item.title}}
+              </div>
+              <div ng-switch-default >  
+                <input type="text" class="form-control" id="{{form_item.name}}" placeholder="{{form_item.title}}" ng-model="field.{{form_item.name}}" required>
+              </div>
             </div>
         </div>
     {% endfor %}
