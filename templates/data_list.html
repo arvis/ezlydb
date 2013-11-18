@@ -1,10 +1,8 @@
 
-
 <ul class="list-group">
   <li class="list-group-item" ng-repeat="field in data ">
-    {% for item in form_data %}
+    {% for item in field_data %}
         <span ng-bind="field.{{item.name}}"></span>  
-        
     {% endfor %}
         <span class="pull-right">
         <button type="button" ng-click="field.editorEnabled=!field.editorEnabled" class="btn btn-info btn-xs">edit</button>    

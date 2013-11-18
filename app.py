@@ -30,12 +30,15 @@ def show_list(form_name):
     #get forms oid
     if "_id" in form:
         field_data = list(mongo.db["fields_"+str(form["_id"])].find())
-        
+
+        #import pdb; pdb.set_trace()
+
         generated_fields=[]
         for field in field_data:
-            #import pdb; pdb.set_trace()
             if field["field_type"]=="lookup_field":
                 generated_fields.append(generate_lookup(field))
+            if field["field_type"]=="calc_field":
+                generated_fields.append(generate_calc(field))
             else:
                 generated_fields.append(generate_textfield(field))
                 
@@ -45,7 +48,7 @@ def show_list(form_name):
                 
         #import pdb; pdb.set_trace()
 
-        return render_template('data_list.html',form_data=generated_fields)
+        return render_template('data_list.html',form_data=generated_fields,field_data=field_data)
     
     else:
         #raise 404 or something
@@ -66,7 +69,7 @@ def generate_lookup(field):
     
     #import pdb; pdb.set_trace()
     for value in values:
-        ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) # FIXME: later replace with real reference
+        ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
     ret_field+="</select>"
     
     retval={}
@@ -75,7 +78,14 @@ def generate_lookup(field):
     
     return retval
     
+def generate_calc(field):
+    #import pdb; pdb.set_trace()
 
+    ret={}
+    ret["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    ret["field"]='<span ng-bind="field.%s %s">field.</span>' % (field["calc_field"]["name"],field["calc_formula"])
+    return ret
+    
 
 
 
@@ -278,6 +288,35 @@ def save_report():
     return json.dumps({"operation":"failure","success":False })
     
     
+#----------------------------
+# Button functions
+
+@app.route("/admin/buttons/<form_id_in>/",methods=['GET'])
+def show_button_admin(form_id_in):
+    return render_template('button_admin.html',form_id=form_id_in)
+
+@app.route("/admin/save_button/",methods=['POST'])
+def save_button():
+    data={}
+    data=request.json
+    form_id=request.json["form_id"]
+    
+    val=mongo.db["buttons_"+form_id].insert(data)
+    return json.dumps({"operation":"insert","success":True,"id":str(val)})
+
+@app.route("/admin/button_list/",methods=['POST'])
+def button_list():
+    form_id=request.json["form_id"]
+    button_list = mongo.db["buttons_"+form_id].find()
+    json_docs=json.dumps(list(button_list), default=json_util.default)
+    return json_docs 
+    
+    
+
+    
+@app.route("/admin/delete_button/",methods=['POST'])
+def delete_button():
+    return ""
 
 
 if __name__ == "__main__":

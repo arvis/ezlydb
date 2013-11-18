@@ -1,0 +1,108 @@
+{% raw %}
+<html ng-app>
+<head>
+
+<title>EasyDb</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
+    <script src="/static/admin.js" ></script>
+
+    
+    </head>
+    <body>
+<div class="container" ng-controller="ButtonAdminController">        
+
+<h3>Buttton admin  {{ form_name  }}</h3>
+
+<div ng-init="form_id='{% endraw %}{{ form_id }}{% raw %}'" class="col-xs-6 col-md-3">
+     
+    <ul class="list-group" >
+        <li class="list-group-item"><a href="#" ng-click="buttonMenuClick()"><span class="glyphicon glyphicon-plus"> </span> <b>Add new button...</b></a></li>
+        
+        <li class="list-group-item"  ng-repeat="button in button_list">
+            <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="buttonMenuClick(form)">{{button.name}}</a>
+        </li>    
+    </ul>
+
+</div>
+
+<div class="col-xs-12 col-sm-6 col-md-9">
+    <form class="form-horizontal" role="form">
+        
+    Form id is {{ form_id }}
+       
+        
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">Button name</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="buttonName" ng-model="button_name" placeholder="Enter button name" required>
+        </div>
+        
+      </div>
+      
+      <div class="form-group">
+        <label for="button_action" class="col-sm-2 control-label">Action</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="button_action" ng-click="getFormsReports()" ng-model="button_action" >
+              <option value="open_form">Open another form</option>
+              <option value="open_report">Open report</option>
+            </select>
+        </div>
+        
+        <label for="linked_form" class="col-sm-2 control-label">Linked form</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="linked_form" ng-model="linked_form" ng-options="obj.title for obj in linked_objects_list"  >
+            </select>
+        </div>
+        
+      </div>
+      
+      
+      <div class="form-group">
+        <label for="filter_params" class="col-sm-2 control-label">Filter options</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="filter_options" ng-click="getFields()" ng-model="filter_options" >
+              <option value="all_fields">All fields</option>
+              <option value="by_current_record">Filter by current record</option>
+            </select>
+        </div>
+        
+      </div>
+      
+      <div class="form-group">
+          <div class="col-sm-12"> <h4>Filters</h4> </div>
+       </div>
+       
+      <div class="form-group">
+        
+        <label for="filter_field_name" class="col-sm-2 control-label">Field name  </label>
+        <div class="col-sm-4">
+            <select class="form-control" id="filter_field_name" ng-model="filter_field_name" ng-options="obj.name for obj in current_field_list"  >
+            </select>
+            
+        </div>
+
+        <label for="linked_field_name" class="col-sm-2 control-label">= Linked field</label>
+        <div class="col-sm-4">
+            <select class="form-control" id="linked_field_name" ng-model="linked_field_name" ng-options="obj.name for obj in linked_field_list" >
+                <option value="id">id</option>
+            </select>
+        </div>
+     </div>
+      
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" ng-click="saveData()" class="btn btn-primary">Done</button>
+        </div>
+      </div>
+    </form>
+
+</div>
+</div>
+
+</body>
+
+</html>
+{% endraw %}

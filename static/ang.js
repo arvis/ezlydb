@@ -45,8 +45,11 @@ function SingleFormController($scope, $http) {
     
   $scope.form_name="";  
   $scope.form_id="";  
+  $scope.buttons={};
   
   $scope.field={};
+  
+  
 
     $scope.$on('formClickonChild', function($sc,param) {
         //console.log(param);
@@ -57,9 +60,13 @@ function SingleFormController($scope, $http) {
         $http.get('data/'+$scope.form_id).success(function(data) {
             $scope.data = data;
             //console.log(data[1]._id.$oid)
-            
-            
-            
+        });
+        
+        var button_data={};
+        button_data["form_id"]=$scope.form_id;
+        $http.post('/admin/button_list/',button_data).success(function(data) {
+            $scope.buttons = data;
+            //console.log(data[1]._id.$oid)
         });
         
     });

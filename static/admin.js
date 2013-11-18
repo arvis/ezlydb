@@ -276,7 +276,7 @@ function ReportAdminController($scope, $http) {
   $scope.field_list="";
   $scope.sums_for_numbers=false; // does summing for number fields needs to be done
   $scope.report_name="my report";
-  $scope.report_title="click here to edit report title";
+  $scope.title="click here to edit report title";
   $scope.report_footer="click here to edit footer";
   $scope.report_id="";
   $scope.form_id="";
@@ -302,7 +302,7 @@ function ReportAdminController($scope, $http) {
             $scope.field_list = data;
             $scope.showReport=true;
             $scope.report_name=param.title+" report";
-            $scope.report_title=param.title+" report";
+            $scope.title=param.title+" report";
             
         });     
     });
@@ -311,7 +311,7 @@ function ReportAdminController($scope, $http) {
         var report_data={};
         
         console.log(param);
-        $scope.report_title=param.report_title;
+        $scope.title=param.title;
         $scope.report_footer=param.report_footer;
         $scope.report_id=param._id.$oid;
 
@@ -346,7 +346,7 @@ function ReportAdminController($scope, $http) {
         }, data["fields"]);
         
         data["form_id"]=$scope.form_id;
-        data["report_title"]=$scope.report_title;
+        data["title"]=$scope.title;
         
         if ($scope.report_id.length>0){
             data["id"]=$scope.report_id;
@@ -375,5 +375,118 @@ function ReportAdminController($scope, $http) {
             console.log("failure");
         });        
     }
+    
+}
+
+function ButtonAdminController($scope,$http){
+    $scope.button_name="";
+    $scope.button_action="open_form";
+    $scope.linked_form="";
+    $scope.filter_options="all_fields";
+    $scope.filter_field_name="id";
+    $scope.linked_field_name="id";
+    $scope.linked_objects_list={};
+    $scope.current_field_list={}
+    $scope.linked_field_list={}
+    $scope.form_id="";
+    $scope.show_filter_select=false;
+
+  $http.get('/admin/form_list').success(function(data) {
+    $scope.linked_objects_list = data;
+    //console.log("forms list");
+    //$scope.linked_form=data[0];    
+    var data={};
+    data.form_id=$scope.form_id;
+    
+    $http.post('/admin/get_form_fields/', data).
+    success(function(return_data, status, headers, config) {
+        $scope.current_field_list=return_data;
+        
+    }).
+    error(function(data, status, headers, config) {
+        console.log("failure");
+    });
+
+  });
+  
+    $scope.getFormsReports=function(){
+
+        if ($scope.button_action=="open_form"){
+          $http.get('/admin/form_list').success(function(data) {
+            $scope.linked_objects_list = data;
+          });
+            
+        }
+        else {
+          $http.get('/admin/report_list').success(function(data) {
+            $scope.linked_objects_list = data;
+
+          });
+        }
+    }
+    
+    
+    $scope.getFields=function(){
+        var data={};
+        
+        if (filter_options=="all_fields"){
+            //$scope.show_filter_select=false;
+            return;
+        }
+        
+        $scope.show_filter_select=true;
+
+/*        
+        data.form_id=$scope.form_id;
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.current_field_list=return_data;
+            
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+*/        
+        
+        linked_data={};
+        
+        linked_data.form_id=$scope.linked_form._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', linked_data).
+        success(function(return_data, status, headers, config) {
+            $scope.linked_field_list=return_data;
+            
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+        
+        
+    }
+    
+    $scope.saveData=function(){
+        var data={};
+        
+        data.button_name=$scope.button_name;
+        data.button_action=$scope.button_action;
+        data.linked_form=$scope.linked_form._id.$oid;
+        data.filter_options=$scope.filter_options;
+        data.filter_field_name=$scope.filter_field_name;
+        data.linked_field_name=$scope.linked_field_name;
+        data.form_id=$scope.form_id;
+
+        $http.post('/admin/save_button/', data).
+        success(function(return_data, status, headers, config) {
+            console.log("success");
+        }).
+        error(function(data, status, headers, config) {
+            console.log("failure");
+        });
+        
+        
+    }
+    
+
+
     
 }
