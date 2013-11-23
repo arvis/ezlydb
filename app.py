@@ -5,50 +5,68 @@ from flask import Flask
 from flask.ext.pymongo import PyMongo
 from bson import json_util
 from bson.objectid import ObjectId
+import urllib
 
 
 app = Flask(__name__)
 mongo = PyMongo(app)
 
-form_data=[{'name':'form1',"title":"form 1",'fields':[{ }] }]
-
-forms_list=[{'name':'form1',"title":"form 1","data":[{"name":"field1","title":"field 1","type":"text"},{"name":"field2","title":"field 2","type":"text"}] }]
-
-
 @app.route("/")
 def main():
     return render_template('index.html')
 
-@app.route("/show_list/<form_name>",methods=['GET'])
+@app.route("/show_form/<form_name>/",methods=['GET'])
+def show_form(form_name):
+    return render_template('show_form.html',form_name=form_name)
+
+
+@app.route("/show_list/<form_name>/",methods=['GET','POST'])
 def show_list(form_name):
+    
+    #import pdb; pdb.set_trace()
+    
     #find in forms by form_name
     form = mongo.db["forms"].find_one({"name": form_name})
     
+    # if cant get by name, trying to get by id
     if form is None:
-        return ""
+        form = mongo.db["forms"].find_one({"_id":ObjectId(form_name)})
+        if form is None:
+            return ""
 
     #get forms oid
     if "_id" in form:
         field_data = list(mongo.db["fields_"+str(form["_id"])].find())
+        button_list = list(mongo.db["buttons_"+str(form["_id"])].find())
 
-        #import pdb; pdb.set_trace()
+        button_list_out=[]
+        for button in button_list:
+            btn={}
+            url_params=""
+            btn["button_name"]=button["button_name"]
+            btn["button_action"]=button["button_action"]
+            btn["object_id"]=ObjectId(button["_id"])
+            
+            #url_params+="&button_action=%s" % (button["button_action"])
+            #url_params+="&object_id=%s" % (ObjectId(button["_id"]))
+            #url_params+="&filter_options=%s" % (button["filter_options"])
+            #url_params+="&filter_field_name=%s" %  (button["filter_field_name"]["name"])
+            #url_params+="filter_field_id=%s" %  (button["filter_field_name"]["_id"]) # FIXME: need to add id manually to field data
+            #url_params["filter_field_value"]=button["filter_field_value"]
+            #btn["url_param"]=url_params
+            button_list_out.append(btn)
+             
 
         generated_fields=[]
         for field in field_data:
             if field["field_type"]=="lookup_field":
                 generated_fields.append(generate_lookup(field))
-            if field["field_type"]=="calc_field":
+            elif field["field_type"]=="calc_field":
                 generated_fields.append(generate_calc(field))
             else:
                 generated_fields.append(generate_textfield(field))
                 
-        
-        #for i in range(len(field_data)):
-                
-                
-        #import pdb; pdb.set_trace()
-
-        return render_template('data_list.html',form_data=generated_fields,field_data=field_data)
+        return render_template('data_list.html',form_data=generated_fields,field_data=field_data, button_list=button_list_out)
     
     else:
         #raise 404 or something
@@ -59,13 +77,13 @@ def show_list(form_name):
 def generate_textfield(field):
     retval={}
     retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
-    retval["field"]='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required>' % (field["name"],field["name"],field["name"])
+    retval["field"]='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required>' % (field["name"],field["name"],ObjectId(field["_id"]))
 
     return retval
 
 def generate_lookup(field):
     values=list(mongo.db["data_"+field["lookup"]["form_id"]].find())
-    ret_field='<select class="form-control">'
+    ret_field='<select class="form-control" id="%s" ng-model="field.%s">' % (field["name"], ObjectId(field["_id"]))
     
     #import pdb; pdb.set_trace()
     for value in values:
@@ -94,7 +112,6 @@ def post_data():
     data=request.json["data"]
     form_name=request.json["form_name"]
     #row_id=request.json["id"]
-    
     #TODO: check if this user is allowed to post here
     
     if "id" in request.json:
@@ -122,7 +139,15 @@ def post_data():
 
 @app.route("/data/<form_name>/",methods=['GET'])
 def get_all(form_name):
-    docs = mongo.db["data_"+form_name].find()
+    #find_params=request.args
+    filter_params={}
+    if len(request.args)>0:
+        #assuming for now, that there is only one param, later need to redone it
+        filter_params={request.args.items()[0][0]:request.args.values()[0]}
+    
+    
+    docs = mongo.db["data_"+form_name].find(dict(filter_params))
+    #import pdb; pdb.set_trace()
     
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
@@ -163,11 +188,13 @@ def delete_row():
 
 @app.route("/my_form")
 def mock_form():
+    #not in node
     return render_template('mock_form.html')
 
 
 @app.route("/tmp_show/",methods=['GET'])
 def tmp_show_list(form_name):
+    #not in node
     out=render_list_definition(form_name)
     return out
 
@@ -309,6 +336,22 @@ def button_list():
     form_id=request.json["form_id"]
     button_list = mongo.db["buttons_"+form_id].find()
     json_docs=json.dumps(list(button_list), default=json_util.default)
+    return json_docs 
+    
+    
+@app.route("/admin/button_data/",methods=['POST'])
+def get_button():
+    form_id=request.json["form_id"]
+    button_id=request.json["button_id"]
+    button = mongo.db["buttons_"+form_id].find_one({"_id":ObjectId(button_id)})
+    #form = mongo.db["forms"].find_one({"_id":ObjectId(form_id)})
+    #import pdb; pdb.set_trace()
+
+    data={}
+    data["button"]=button
+    #data["form"]=form
+
+    json_docs=json.dumps(dict(button), default=json_util.default)
     return json_docs 
     
     

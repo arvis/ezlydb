@@ -56,7 +56,7 @@
         <li class="list-group-item"><a href="/admin/reports/" ><span class="glyphicon glyphicon-plus"> </span> <b>Add new report...</b></a></li>
         
         <li class="list-group-item"  ng-repeat="report in report_list">
-          <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="reportMenuToRoot(report)">{{ report.report_title }}</a>
+          <span class="glyphicon glyphicon-list"></span> <a href="#" ng-click="reportMenuToRoot(report)">{{ report.title }}</a>
         </li>    
       </ul>
 
@@ -92,7 +92,7 @@
     <div ng-show="showReport">
 
 
-      <div class="row" style="border-style:dashed;border-width:1px;"> <center><h1  ng-click="editTitle=!editTitle" ng-show="!editTitle" >{{ report_title }}</h1>   
+      <div class="row" style="border-style:dashed;border-width:1px;"> <center><h1  ng-click="editTitle=!editTitle" ng-show="!editTitle" >{{ title }}</h1>   
 
         <form class="form-inline" ng-show="editTitle" role="form">
           <div class="form-group">

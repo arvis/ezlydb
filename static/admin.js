@@ -471,8 +471,8 @@ function ButtonAdminController($scope,$http){
         data.button_action=$scope.button_action;
         data.linked_form=$scope.linked_form._id.$oid;
         data.filter_options=$scope.filter_options;
-        data.filter_field_name=$scope.filter_field_name;
-        data.linked_field_name=$scope.linked_field_name;
+        data.filter_field_name=$scope.filter_field_name._id.$oid;
+        data.linked_field_name=$scope.linked_field_name._id.$oid;
         data.form_id=$scope.form_id;
 
         $http.post('/admin/save_button/', data).

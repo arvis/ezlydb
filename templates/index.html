@@ -37,7 +37,7 @@
       <li  class="dropdown" ng-controller="ReportListController" >
           <a id="drop4" role="button" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-list-alt"></span> Reports <b class="caret"></b></a>
           <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4" >
-            <li role="presentation" ng-repeat="report in report_list"><a role="menuitem" tabindex="-1" href="#" ng-click="reportMenuToRoot(report)" >  {{ report.report_title }}</a></li>
+            <li role="presentation" ng-repeat="report in report_list"><a role="menuitem" tabindex="-1" href="#" ng-click="reportMenuToRoot(report)" >  {{ report.title }}</a></li>
           </ul>
       </li>
     </ul>
@@ -49,13 +49,13 @@
 <div ng-show="showForm" ng-controller="SingleFormController">
     <h3>{{ form_name }}</h3>
     {% endraw %}
-    <div ng-include="'/show_list/'+form_name"></div>
+    <div ng-include="'/show_list/'+form_name+'/'+formParams"></div>
     
     {% raw %}
 </div>
 
-<div ng-show="showReport" ng-controller="ReportController">
-    <div  ng-include="'/show_report/'+report_id"></div>
+<div ng-controller="ReportController">
+    <div  ng-include="'/show_report/'+report_id+'/'+formParams"></div>
 </div>
   
   
