@@ -15,7 +15,7 @@
 <tbody>
 <tr ng-repeat="row in data">
 {% for item in report["fields"]  %}
-<td ng-bind="row.{{ item.name }}">  </td> 
+<td ng-bind="row.{{ item.id }}">  </td> 
 {% endfor %}
 
 </tr>

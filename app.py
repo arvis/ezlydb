@@ -87,7 +87,8 @@ def generate_lookup(field):
     
     #import pdb; pdb.set_trace()
     for value in values:
-        ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
+        #ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
+        ret_field+='<option value="%s">%s</option>' % (value[field["lookup"]["field_name"]],value[field["lookup"]["field_name"]]) 
     ret_field+="</select>"
     
     retval={}
@@ -101,7 +102,8 @@ def generate_calc(field):
 
     ret={}
     ret["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
-    ret["field"]='<span ng-bind="field.%s %s">field.</span>' % (field["calc_field"]["name"],field["calc_formula"])
+    #ret["field"]='<span ng-bind="field.%s %s">field.</span>' % (ObjectId(field["calc_field"]["_id"]),field["calc_formula"])
+    ret["field"]='<input class="form-control" type="text" id="calc_field" ng-model="field.%s" ng-init="field.%s= field.%s %s " />' % (ObjectId(field["_id"]),ObjectId(field["_id"]), field["calc_field"],field["calc_formula"])
     return ret
     
 
@@ -162,6 +164,8 @@ def show_report(report_name):
     if report is None:
         return ""
 
+    field_data=mongo.db["fields_"+report["form_id"]].find()
+
     return render_template('report_fields.html',report=report,report_fields=report["fields"])
     
 
@@ -184,19 +188,25 @@ def delete_row():
     ret = mongo.db["data_"+form_name].remove({'_id': ObjectId(row_id)} );
     return "success"
 
+@app.route("/singe_item_report/<report_id>/",methods=['GET'])
+def single_report(report_id):
+    report = mongo.db["report_single"].find_one({'_id': ObjectId(report_id)})
+    report_data = mongo.db["data_"+report["form_id"]].find()
+    json_docs=json.dumps(list(report_data), default=json_util.default)
 
+    #import pdb; pdb.set_trace()
 
-@app.route("/my_form")
-def mock_form():
-    #not in node
-    return render_template('mock_form.html')
+    return render_template('single_report.html',report_fields=report["field_data"],report_js=json_docs)
 
+@app.route("/singe_item_data/<report_name>/",methods=['GET'])
+def single_report_data(report_name):
+    report = mongo.db["report_single"].find_one({'_id': ObjectId(report_name)})
+    
 
-@app.route("/tmp_show/",methods=['GET'])
-def tmp_show_list(form_name):
-    #not in node
-    out=render_list_definition(form_name)
-    return out
+    docs = mongo.db["data_"+report["form_id"]].find()
+    json_docs=json.dumps(list(docs), default=json_util.default)
+    return json_docs 
+
 
 
 #--------------------------
@@ -258,7 +268,6 @@ def get_form_fields():
 def set_field_properties():
     data=request.json["data"]
     #import pdb; pdb.set_trace()
-
     form_id=request.json["form_id"]
     
     if "id" in request.json:
@@ -313,6 +322,23 @@ def save_report():
         return json.dumps({"operation":"insert","success":True,"id":str(val)})
     
     return json.dumps({"operation":"failure","success":False })
+
+
+@app.route("/admin/single_row_report/",methods=['GET'])
+def single_row_report():
+    return render_template('single_report_admin.html')
+
+@app.route("/admin/save_report_single/",methods=['POST'])
+def save_report_single():
+    data={}
+    data=request.json
+    #import pdb; pdb.set_trace()
+
+    data=request.json
+    val=mongo.db["report_single"].insert(data)
+    
+    return "success"
+
     
     
 #----------------------------

@@ -39,7 +39,7 @@
             </div>
             <div data-ng-switch-when="calc_field">
                 Field to calculate:
-                <select id="calc_field" ng-model="dbField.calc_field" ng-options="calc_field.name for calc_field in master" 
+                <select id="calc_field" ng-model="dbField.calc_field" ng-options="calc_field._id.$oid as calc_field.name for calc_field in master" 
                     class="form-control" name="lookup_form" >
                 </select>                
                 

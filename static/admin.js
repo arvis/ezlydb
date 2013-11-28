@@ -1,4 +1,6 @@
-
+var adminApp = angular.module('adminApp', []);
+//adminApp.controller('PhoneListCtrl', function ($scope) {
+//});
 
 function FormListController($scope, $http) {
   $scope.form_name="new";
@@ -141,21 +143,6 @@ function DbFieldController($scope,$http) {
             console.log("failure");
         });
     }
-/*
-    $scope.lookupFieldSet=function($sc,field){
-        param={};
-        param.field_id=$scope.current_field;
-        param.form_id=$scope.current_lookup_form;
-        $scope.dbField["lookup"]=param;
-    }
-    
-    $scope.get_forms_list=function(){
-        $http.get('/admin/form_list').success(function(data) {
-            $scope.forms_list = data;
-            $scope.current_lookup_form=data[0];
-      });
-    }
-*/
     
     $scope.get_form_fields= function() {
         
@@ -168,14 +155,6 @@ function DbFieldController($scope,$http) {
         $http.post('/admin/get_form_fields/', data).
         success(function(data, status, headers, config) {
             $scope.master=data;
-            
-/*
-            if (param["field_type"]=="lookup_field"){
-                $scope.current_field=$scope.forms_list[2] ;
-                $scope.current_lookup_form=param.form_id;
-            }
-*/
-            
         }).
         error(function(data, status, headers, config) {
             console.log("failure");
@@ -472,7 +451,9 @@ function ButtonAdminController($scope,$http){
         data.linked_form=$scope.linked_form._id.$oid;
         data.filter_options=$scope.filter_options;
         data.filter_field_name=$scope.filter_field_name._id.$oid;
-        data.linked_field_name=$scope.linked_field_name._id.$oid;
+        if ($scope.button_action=="open_form" && $scope.filter_options=="by_current_record"){
+            data.linked_field_name=$scope.linked_field_name._id.$oid;
+        }
         data.form_id=$scope.form_id;
 
         $http.post('/admin/save_button/', data).
@@ -482,11 +463,113 @@ function ButtonAdminController($scope,$http){
         error(function(data, status, headers, config) {
             console.log("failure");
         });
+    }
+}
+
+//adminApp.controller('PhoneListCtrl', function ($scope) {
+//});
+
+adminApp.controller('SingleRowReportAdmin', function ($scope,$http) {
+    $scope.forms_list={};
+    $scope.field_list=[];
+    $scope.new_field_name="";
+    $scope.report_name="";
+
+  $http.get('/admin/form_list').success(function(data) {
+    $scope.forms_list = data;
+  });
+  
+
+    $scope.getFormFields= function(form) {
+        var data={};
+        data.form_id=$scope.current_form._id.$oid;
         
-        
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.field_list=return_data;
+            var temp = [];
+            // setting every field as field type, to know when generate report
+            angular.forEach($scope.field_list, function(value, key){
+                $scope.field_list[key].type="field";
+                $scope.field_list[key].field_id=value._id.$oid;
+            }, temp);
+            $scope.report_name=$scope.current_form.title+" page report";
+            $scope.new_field_name="field_"+$scope.field_list.length;
+        });
     }
     
-
-
+    $scope.addItem=function(){
+        $scope.field_list.push({name:$scope.new_field_name,type:"text"} );
+        $scope.new_field_name="field_"+$scope.field_list.length;
+    }
     
-}
+    $scope.saveReport=function(){
+        var data={};
+        data.form_id=$scope.current_form._id.$oid;
+        data.form_name=$scope.current_form.name;
+        data.report_title=$scope.report_name;
+        data.field_data=$scope.field_list;
+        
+        console.log();
+        
+        $http.post('/admin/save_report_single/', data).
+        success(function(return_data, status, headers, config) {
+            console.log("success");
+        });
+    }
+    
+    // NOTE: $scope.$apply is called by the draggable directive
+    $scope.updatePosition = function (name, pos) {
+        var log = [];
+        angular.forEach($scope.field_list, function(value, key){
+            if (name==value){
+                $scope.field_list[key].left=pos.left;
+                $scope.field_list[key].top=pos.top;
+            }
+        }, log);
+    };
+
+    // NOTE: $scope.$apply is called by the resizable directive
+    $scope.updateScale = function (name, pos, size) {
+        var log = [];
+        angular.forEach($scope.field_list, function(value, key){
+            if (name==value){
+                $scope.field_list[key].left=pos.left;
+                $scope.field_list[key].top=pos.top;
+                $scope.field_list[key].width=size.width;
+                $scope.field_list[key].height=size.height;
+            }
+        }, log);
+    };
+    
+});
+
+
+adminApp.directive('ngDraggable', function() {
+  return {
+    restrict: 'A',
+    //template: '<div class="sparkline">Hello</div>',
+    link: function (scope, element, attrs) {
+        element.draggable({
+              stop: function (event, ui) {
+                  scope.$apply(function() {
+                      scope.updatePosition(scope.field,{left: ui.position.left,top: ui.position.top});
+                  });
+              }
+          });
+          element.resizable({
+              maxHeight: 40,
+              minHeight: 10,
+              stop: function (event, ui) {
+                  scope.$apply(function () {
+                      var pos={top: ui.position.top,left: ui.position.left};
+                      var scale={width: ui.size.width,height: ui.size.height}
+                      scope.updateScale(scope.field,pos,scale);
+                  });
+              }
+          });
+          
+    }
+  }
+});
+

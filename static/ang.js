@@ -62,18 +62,27 @@ function ReportController($scope, $http) {
     $scope.data=[];
     $scope.report_id="";
 
+    $scope.getReportData=function(){
+        
+        $http.get('report_data/'+$scope.report_id).success(function(data) {
+            $scope.data = data;
+        });
+        
+    }
+
     $scope.$on('reportClickonChild', function($sc,param) {
         //console.log(param);
         $scope.report_name=param.name;
         $scope.report_id=param._id.$oid;
-        $http.get('report_data/'+$scope.report_id).success(function(data) {
-            $scope.data = data;
-        });
+        $scope.formParams="";
+        $scope.getReportData();
+        
     });
     
     $scope.$on('customButtonReport', function($sc,param) {
         //object_id/?params=1&linked_field_name=field_value
-        $scope.report_id=param["object_id"];
+        console.log(param);
+        $scope.report_id=param["linked_form"];
         
         if (typeof param["linked_field_name"] === "undefined") {
             $scope.formParams="";
@@ -84,7 +93,9 @@ function ReportController($scope, $http) {
         else {
             $scope.formParams="?"+param["linked_field_name"]+"="+param["field_value"];
         }
-        console.log($scope.report_id+"/"+$scope.formParams );
+        //console.log($scope.report_id+"/"+$scope.formParams );
+        
+        $scope.getReportData();
     });
 
 
@@ -123,8 +134,8 @@ function SingleFormController($scope, $http) {
 
     $scope.$on('customButtonForm', function($sc,param) {
         //object_id/?params=1&linked_field_name=field_value
-        $scope.form_name=param["object_id"];
-        $scope.form_id=param["object_id"];
+        $scope.form_name=param["linked_form"];
+        $scope.form_id=param["linked_form"];
         $scope.formParams="?"+param["linked_field_name"]+"="+param["field_value"];
         //console.log($scope.form_name+"/"+$scope.formParams );
         $scope.get_data();
@@ -256,6 +267,19 @@ function SingleFormController($scope, $http) {
   };
     
 }
+
+function SingleReportController($scope, $http) {
+    console.log(report_js);
+    $scope.report_data=report_js;
+/*
+    $http.get('report_data/'+$scope.report_id).success(function(data) {
+        $scope.data = data;
+    });
+*/    
+    
+    
+}
+
  
 
 function Controller($scope) {
