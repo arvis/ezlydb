@@ -24,8 +24,6 @@ def show_form(form_name):
 def show_list(form_name):
     
     #import pdb; pdb.set_trace()
-    
-    #find in forms by form_name
     form = mongo.db["forms"].find_one({"name": form_name})
     
     # if cant get by name, trying to get by id
@@ -47,13 +45,6 @@ def show_list(form_name):
             btn["button_action"]=button["button_action"]
             btn["object_id"]=ObjectId(button["_id"])
             
-            #url_params+="&button_action=%s" % (button["button_action"])
-            #url_params+="&object_id=%s" % (ObjectId(button["_id"]))
-            #url_params+="&filter_options=%s" % (button["filter_options"])
-            #url_params+="&filter_field_name=%s" %  (button["filter_field_name"]["name"])
-            #url_params+="filter_field_id=%s" %  (button["filter_field_name"]["_id"]) # FIXME: need to add id manually to field data
-            #url_params["filter_field_value"]=button["filter_field_value"]
-            #btn["url_param"]=url_params
             button_list_out.append(btn)
              
 
@@ -132,8 +123,6 @@ def post_data():
     else:
         val=mongo.db["data_"+form_name].insert(data)
         return str(val)
-
-    
     
     #TODO: check if that element exists
     del data["_id"] 
@@ -154,6 +143,14 @@ def get_all(form_name):
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
 
+@app.route("/delete_row/",methods=['POST'])
+def delete_row():
+    row_id=request.json["id"]
+    form_name=request.json["form_name"]
+    ret = mongo.db["data_"+form_name].remove({'_id': ObjectId(row_id)} );
+    return "success"
+
+
 # ------------------------
 # reports
 
@@ -165,33 +162,32 @@ def show_report(report_name):
         return ""
 
     field_data=mongo.db["fields_"+report["form_id"]].find()
-
     return render_template('report_fields.html',report=report,report_fields=report["fields"])
     
 
 @app.route("/report_data/<report_name>/",methods=['GET'])
 def report_data(report_name):
     report = mongo.db["reports"].find_one({'_id': ObjectId(report_name)})
-    
+    filter_params={}
+    if len(request.args)>0:
+        #assuming for now, that there is only one param, later need to redone it
+        filter_params={request.args.items()[0][0]:request.args.values()[0]}
 
-    docs = mongo.db["data_"+report["form_id"]].find()
+    docs = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
 
     
-@app.route("/delete_row/",methods=['POST'])
-def delete_row():
-    row_id=request.json["id"]
-    form_name=request.json["form_name"]
-
-    
-    ret = mongo.db["data_"+form_name].remove({'_id': ObjectId(row_id)} );
-    return "success"
 
 @app.route("/singe_item_report/<report_id>/",methods=['GET'])
 def single_report(report_id):
     report = mongo.db["report_single"].find_one({'_id': ObjectId(report_id)})
-    report_data = mongo.db["data_"+report["form_id"]].find()
+    filter_params={}
+    if len(request.args)>0:
+        #assuming for now, that there is only one param, later need to redone it
+        filter_params={request.args.items()[0][0]:request.args.values()[0]}
+        
+    report_data = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
     json_docs=json.dumps(list(report_data), default=json_util.default)
 
     #import pdb; pdb.set_trace()
@@ -206,6 +202,15 @@ def single_report_data(report_name):
     docs = mongo.db["data_"+report["form_id"]].find()
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
+
+
+@app.route("/charts/<chart_name>/",methods=['GET'])
+def show_chart(chart_name):
+    return render_template("charts.html")
+
+@app.route("/grid/<form_name>/",methods=['GET'])
+def show_grid(chart_name):
+    return render_template("grid.html")
 
 
 

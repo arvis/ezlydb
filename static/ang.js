@@ -1,5 +1,10 @@
+var frontApp = angular.module('frontApp', []);
+//adminApp.controller('SingleRowReportAdmin', function ($scope,$http) {
 
-function RootFrontController($scope, $http) {
+
+//function RootFrontController($scope, $http) {
+frontApp.controller('RootFrontController', function ($scope,$http) {
+
     $scope.showForm=false;
     $scope.showReport=false;
     $scope.formParams="";
@@ -47,16 +52,13 @@ function RootFrontController($scope, $http) {
                 $scope.showForm=true;
                 $scope.showReport=false;
                 $scope.$broadcast('customButtonForm',param);
-
             }
         });
-        
-        
-        
     });
-}
+});
 
-function ReportController($scope, $http) {
+frontApp.controller('ReportController', function ($scope,$http) {
+//function ReportController($scope, $http) {
     $scope.form_name="";
     $scope.form_id="";
     $scope.data=[];
@@ -97,12 +99,10 @@ function ReportController($scope, $http) {
         
         $scope.getReportData();
     });
+});
 
-
-
-}
- 
-function SingleFormController($scope, $http) {
+frontApp.controller('SingleFormController', function ($scope,$http) {
+//function SingleFormController($scope, $http) {
     
   $scope.form_name="";  
   $scope.form_id="";  
@@ -164,8 +164,6 @@ function SingleFormController($scope, $http) {
       error(function(data, status, headers, config) {
           console.log("failure");
     });
-    
-    
   }
 
   $scope.update_row=function(row){
@@ -198,19 +196,13 @@ function SingleFormController($scope, $http) {
               row._id={};
               row._id.$oid=data.id;
           }
-          
-          
       }).
       error(function(data, status, headers, config) {
           console.log("failure");
       });
-  
-  
   }
 
-
   $scope.add_row=function(){
-
     //$scope.formProps=row;
     var data={};
     data.data=$scope.field;
@@ -220,19 +212,15 @@ function SingleFormController($scope, $http) {
       success(function(data, status, headers, config) {
           $scope.data.push($scope.field);
           $scope.field={};
-          
       }).
       error(function(data, status, headers, config) {
           console.log("failure");
       });
-    
-    
   }
 
   $scope.open_report=function(field,button_id){
       console.log("open_report button id "+button_id);
       $scope.$emit('customButtonClick',field,button_id,$scope.form_id);
-
   }
   
   $scope.open_form=function(field,button_id){
@@ -260,15 +248,11 @@ function SingleFormController($scope, $http) {
       error(function(data, status, headers, config) {
           console.log("failure");
       });
-    
-    
-    
-      
   };
-    
-}
+});
 
-function SingleReportController($scope, $http) {
+frontApp.controller('SingleReportController', function ($scope,$http) {
+//function SingleReportController($scope, $http) {
     console.log(report_js);
     $scope.report_data=report_js;
 /*
@@ -276,23 +260,8 @@ function SingleReportController($scope, $http) {
         $scope.data = data;
     });
 */    
-    
-    
-}
+});
+
 
  
-
-function Controller($scope) {
-  $scope.master= {};
- 
-  $scope.update = function(user) {
-    $scope.master= angular.copy(user);
-  };
- 
-  $scope.reset = function() {
-    $scope.user = angular.copy($scope.master);
-  };
- 
-  $scope.reset();
-}
 
