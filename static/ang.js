@@ -14,12 +14,10 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
     $scope.$on('formMenuClick', function($sc,param) {
         $scope.showForm=true;
         $scope.showReport=false;
-        
         $scope.$broadcast('formClickonChild',param);
     });
 
     $scope.$on('reportMenuClick', function($sc,param) {
-        console.log('reportMenuClick');
         $scope.showForm=false;
         $scope.showReport=true;
         
@@ -65,11 +63,20 @@ frontApp.controller('ReportController', function ($scope,$http) {
     $scope.report_id="";
 
     $scope.getReportData=function(){
-        
         $http.get('report_data/'+$scope.report_id).success(function(data) {
             $scope.data = data;
         });
-        
+    }
+
+    $scope.getLookupData=function(data){
+        console.log(data);
+        try {
+            var obj = JSON.parse(data);
+            return obj.name;
+        }
+        catch(err){
+            return data;
+        }
     }
 
     $scope.$on('reportClickonChild', function($sc,param) {

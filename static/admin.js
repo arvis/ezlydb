@@ -32,6 +32,7 @@ function FormListController($scope, $http) {
         console.log($scope.current_form);
         var data={};
         data.form_id=$scope.current_form._id.$oid;
+        $scope.current_lookup_form=$scope.current_form;
         
         $http.post('/admin/get_form_fields/', data).
         success(function(return_data, status, headers, config) {
@@ -45,8 +46,10 @@ function FormListController($scope, $http) {
     
     $scope.lookupFieldSet=function(field){
         param={};
-        param.field_id=$scope.current_field;
-        param.form_id=$scope.current_lookup_form;
+        param.field_id=$scope.current_field._id.$oid;
+        param.field_name=$scope.current_field.name;
+        param.field_type=$scope.current_field.field_type;
+        param.form_id=$scope.current_lookup_form._id.$oid;
         //$scope.dbField["lookup"]=param;
         $scope.$emit('lookupFieldSet',param);
         
@@ -95,11 +98,8 @@ function DbFieldController($scope,$http) {
     };
 
     $scope.$on('lookupFieldSet',function($sc,param){
-        console.log('++formLookupSelect');
         $scope.dbField["lookup"]=param;
-        
-        console.log($scope.dbField["lookup"]);
-
+        console.log(param);
     });
 
     $scope.$on('formMenuClick', function($sc,param) {
@@ -129,8 +129,8 @@ function DbFieldController($scope,$http) {
     
     $scope.getFormLookupFields= function($sc,form) {
         var data={};
-        console.log(form);
-        console.log($scope.current_lookup_form);
+        //console.log(form);
+        //console.log($scope.current_lookup_form);
         return;
         data.form_id=$scope.current_lookup_form._id.$oid;
         
@@ -173,12 +173,14 @@ function DbFieldController($scope,$http) {
         delete dbField.editorEnabled;
         if (dbField._id){
             data.id=dbField._id.$oid;
+        }
+        
+        if (dbField.lookup){
+            dbField.lookup=$scope.dbField["lookup"];
         }        
 
         data.form_id=$scope.formProps.id;
-        
         data.data=dbField;
-
         $http.post('/admin/set_field_properties/', data).
         success(function(data, status, headers, config) {
             

@@ -16,9 +16,9 @@
 <tr ng-repeat="row in data">
 {% for item in report["fields"]  %}
     {% if item.field_type=="lookup_field" %}
-    <td ng-bind="row.{{ item.id }}">  </td> 
+        <td ng-bind="getLookupData(row.{{ item.id }})">  </td> 
     {% else %}
-    <td ng-bind="row.{{ item.id }}">  </td> 
+        <td ng-bind="row.{{ item.id }}">  </td> 
     {% endif %}
 {% endfor %}
 

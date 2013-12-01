@@ -54,6 +54,15 @@ def show_list(form_name):
                 generated_fields.append(generate_lookup(field))
             elif field["field_type"]=="calc_field":
                 generated_fields.append(generate_calc(field))
+            elif field["field_type"]=="int_field":
+                generated_fields.append(generate_number(field))
+            elif field["field_type"]=="float_field":
+                generated_fields.append(generate_number(field))
+            elif field["field_type"]=="date_field":
+                generated_fields.append(generate_date(field))
+            elif field["field_type"]=="bigtext_field":
+                generated_fields.append(generate_textarea(field))
+                
             else:
                 generated_fields.append(generate_textfield(field))
                 
@@ -69,7 +78,12 @@ def generate_textfield(field):
     retval={}
     retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
     retval["field"]='<input type="text" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required>' % (field["name"],field["name"],ObjectId(field["_id"]))
+    return retval
 
+def generate_textarea(field):
+    retval={}
+    retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    retval["field"]='<textarea class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required rows="3"></textarea>' % (field["name"],field["name"],ObjectId(field["_id"]))
     return retval
 
 def generate_lookup(field):
@@ -80,7 +94,8 @@ def generate_lookup(field):
     for value in values:
         #ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
         #ret_field+='<option value="%s">%s</option>' % (value[field["lookup"]["field_name"]],value[field["lookup"]["field_name"]]) 
-        ret_field+='<option value="{\'id\':\'%s\',\'name\':\'%s\' }">%s</option>' % ( ObjectId(value["_id"]),value[field["lookup"]["field_name"]], value[field["lookup"]["field_name"]]) 
+        #import pdb; pdb.set_trace()
+        ret_field+="<option value='{\"id\":\"%s\",\"name\":\"%s\"}'>%s</option>" % ( ObjectId(value["_id"]),value[field["lookup"]["field_id"]], value[field["lookup"]["field_id"]]) 
     ret_field+="</select>"
     
     retval={}
@@ -88,14 +103,26 @@ def generate_lookup(field):
     retval["field"]=ret_field
     
     return retval
+
+def generate_number(field):
+    retval={}
+    retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    retval["field"]='<input type="number" class="form-control" id="%s" placeholder="%s" ng-model="field.%s" required>' % (field["name"],field["name"],ObjectId(field["_id"]))
+    return retval
+    
+def generate_date(field):
+    retval={}
+    retval["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
+    retval["field"]='<input type="date" class="form-control" id="%s" ng-model="field.%s" required>' % (field["name"],ObjectId(field["_id"]))
+    return retval
     
 def generate_calc(field):
     #import pdb; pdb.set_trace()
 
     ret={}
     ret["label"]='<label for="%s" class="col-sm-2 control-label">%s </label>' % (field["name"], field["name"])
-    #ret["field"]='<span ng-bind="field.%s %s">field.</span>' % (ObjectId(field["calc_field"]["_id"]),field["calc_formula"])
-    ret["field"]='<input class="form-control" type="text" id="calc_field" ng-model="field.%s" ng-init="field.%s= field.%s %s " />' % (ObjectId(field["_id"]),ObjectId(field["_id"]), field["calc_field"],field["calc_formula"])
+    #ret["field"]='<input class="form-control" type="text" id="calc_field" ng-model="field.%s" ng-init="field.%s= field.%s %s " />' % (ObjectId(field["_id"]),ObjectId(field["_id"]), field["calc_field"],field["calc_formula"])
+    ret["field"]='<span ng-bind="field.%s %s">field.</span>' % (ObjectId(field["calc_field"]["_id"]),field["calc_formula"])
     return ret
     
 
@@ -171,13 +198,28 @@ def report_data(report_name):
     report = mongo.db["reports"].find_one({'_id': ObjectId(report_name)})
     filter_params={}
     if len(request.args)>0:
-        #assuming for now, that there is only one param, later need to redone it
+        #TODO: assuming for now that there is only one param, later need to redone it
         filter_params={request.args.items()[0][0]:request.args.values()[0]}
 
     docs = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
     json_docs=json.dumps(list(docs), default=json_util.default)
     return json_docs 
 
+@app.route("/report_group/<report_name>/",methods=['GET'])
+def report_group_by(report_name):
+    report = mongo.db["reports"].find_one({'_id': ObjectId(report_name)})
+    filter_params={}
+    if len(request.args)>0:
+        #assuming for now, that there is only one param, later need to redone it
+        filter_params={request.args.items()[0][0]:request.args.values()[0]}
+
+    #GROUPING http://stackoverflow.com/questions/5010624/how-to-use-group-in-pymongo-to-group-similar-rows
+    #docs = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
+    result = mongo.db["data_"+report["form_id"]].group(['uid'], None,{'list': []},'function(obj, prev) {prev.list.push(obj)}') # reducer
+    
+    json_docs=json.dumps(list(docs), default=json_util.default)
+    return json_docs 
+    
     
 
 @app.route("/singe_item_report/<report_id>/",methods=['GET'])
@@ -194,6 +236,7 @@ def single_report(report_id):
     #import pdb; pdb.set_trace()
 
     return render_template('single_report.html',report_fields=report["field_data"],report_js=json_docs)
+
 
 @app.route("/singe_item_data/<report_name>/",methods=['GET'])
 def single_report_data(report_name):
@@ -392,6 +435,11 @@ def get_button():
 @app.route("/admin/delete_button/",methods=['POST'])
 def delete_button():
     return ""
+
+    
+@app.route("/admin/testrun/",methods=['POST','GET'])
+def run_tests():
+    return render_template("testrun.html")
 
 
 if __name__ == "__main__":
