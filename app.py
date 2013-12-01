@@ -79,7 +79,8 @@ def generate_lookup(field):
     #import pdb; pdb.set_trace()
     for value in values:
         #ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
-        ret_field+='<option value="%s">%s</option>' % (value[field["lookup"]["field_name"]],value[field["lookup"]["field_name"]]) 
+        #ret_field+='<option value="%s">%s</option>' % (value[field["lookup"]["field_name"]],value[field["lookup"]["field_name"]]) 
+        ret_field+='<option value="{\'id\':\'%s\',\'name\':\'%s\' }">%s</option>' % ( ObjectId(value["_id"]),value[field["lookup"]["field_name"]], value[field["lookup"]["field_name"]]) 
     ret_field+="</select>"
     
     retval={}

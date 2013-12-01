@@ -321,6 +321,7 @@ function ReportAdminController($scope, $http) {
                 field_data.id=value._id.$oid;
             }
             field_data.name=value.name;
+            field_data.field_type=value.field_type;
             this.push(field_data);
         }, data["fields"]);
         
