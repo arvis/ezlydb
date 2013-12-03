@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request
 from flask import Flask
 from flask.ext.pymongo import PyMongo
+from flask.ext import pymongo
 from bson import json_util
 from bson.objectid import ObjectId
 import urllib
@@ -34,8 +35,8 @@ def show_list(form_name):
 
     #get forms oid
     if "_id" in form:
-        field_data = list(mongo.db["fields_"+str(form["_id"])].find())
-        button_list = list(mongo.db["buttons_"+str(form["_id"])].find())
+        field_data = list(mongo.db["fields_"+str(form["_id"])].find().sort("_id"))
+        button_list = list(mongo.db["buttons_"+str(form["_id"])].find().sort("_id"))
 
         button_list_out=[]
         for button in button_list:
@@ -94,7 +95,6 @@ def generate_lookup(field):
     for value in values:
         #ret_field+='<option value="%s">%s</option>' % (ObjectId(value["_id"]),value[field["lookup"]["field_name"]]) 
         #ret_field+='<option value="%s">%s</option>' % (value[field["lookup"]["field_name"]],value[field["lookup"]["field_name"]]) 
-        #import pdb; pdb.set_trace()
         ret_field+="<option value='{\"id\":\"%s\",\"name\":\"%s\"}'>%s</option>" % ( ObjectId(value["_id"]),value[field["lookup"]["field_id"]], value[field["lookup"]["field_id"]]) 
     ret_field+="</select>"
     

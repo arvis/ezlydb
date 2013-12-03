@@ -372,6 +372,7 @@ function ButtonAdminController($scope,$http){
     $scope.linked_field_list={}
     $scope.form_id="";
     $scope.show_filter_select=false;
+    $scope.filter_type="by_id";
 
   $http.get('/admin/form_list').success(function(data) {
     $scope.linked_objects_list = data;
@@ -418,18 +419,6 @@ function ButtonAdminController($scope,$http){
         
         $scope.show_filter_select=true;
 
-/*        
-        data.form_id=$scope.form_id;
-        $http.post('/admin/get_form_fields/', data).
-        success(function(return_data, status, headers, config) {
-            $scope.current_field_list=return_data;
-            
-        }).
-        error(function(data, status, headers, config) {
-            console.log("failure");
-        });
-*/        
-        
         linked_data={};
         
         linked_data.form_id=$scope.linked_form._id.$oid;
@@ -454,8 +443,13 @@ function ButtonAdminController($scope,$http){
         data.linked_form=$scope.linked_form._id.$oid;
         data.filter_options=$scope.filter_options;
         data.filter_field_name=$scope.filter_field_name._id.$oid;
+        
+        
         if ($scope.button_action=="open_form" && $scope.filter_options=="by_current_record"){
             data.linked_field_name=$scope.linked_field_name._id.$oid;
+            data.linked_field_type=$scope.linked_field_name.field_type;
+            data.set_field_value=$scope.set_field_value;
+            
         }
         data.form_id=$scope.form_id;
 

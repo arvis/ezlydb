@@ -37,7 +37,16 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
             param["linked_form"]=return_data["linked_form"]
             param["field_id"]=return_data["filter_field_name"]
             param["linked_field_name"]=return_data["linked_field_name"]
-            param["field_value"]=field[return_data["filter_field_name"]];
+            
+            if (return_data["linked_field_type"]=="lookup_field"){
+                var json_data={};
+                json_data["id"]=field._id.$oid;
+                json_data["name"]=field[return_data["filter_field_name"]];
+                param["field_value"]=JSON.stringify(json_data);
+            }
+            else {
+                param["field_value"]=field[return_data["filter_field_name"]];
+            }
             
             //sample url should look like this, first is dummy value
             //objectid/?params=1&linked_field_name=field_value
@@ -116,9 +125,11 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
   $scope.buttons={};
   $scope.field={};
   $scope.formParams="";
+  $scope.formParamName="";
+  $scope.formParamValue="";
   
   $scope.get_data=function(){
-    $http.get('data/'+$scope.form_id+$scope.formParams).success(function(data) {
+    $http.get('/data/'+$scope.form_id+$scope.formParams).success(function(data) {
         $scope.data = data;
     });
   }
@@ -135,6 +146,8 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
         $scope.form_name=param.name;
         $scope.form_id=param._id.$oid;
         $scope.formParams="";
+        $scope.formParamName="";
+        $scope.formParamValue="";
         $scope.get_data();
         $scope.get_button_data();
     });
@@ -144,6 +157,9 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
         $scope.form_name=param["linked_form"];
         $scope.form_id=param["linked_form"];
         $scope.formParams="?"+param["linked_field_name"]+"="+param["field_value"];
+        $scope.formParamName=param["linked_field_name"];
+        $scope.formParamValue=param["field_value"];
+        
         //console.log($scope.form_name+"/"+$scope.formParams );
         $scope.get_data();
         $scope.get_button_data();
@@ -187,6 +203,11 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
             
     data.data=row;
     data.form_name=$scope.form_id;
+    
+    // if there is param name and it is requested to set it as data, overwriting as filter value
+    if ($scope.formParamName){
+        data.data[$scope.formParamName]=$scope.formParamValue;
+    }
     
     $http.post('/post_data/', data).
       success(function(return_data, status, headers, config) {
