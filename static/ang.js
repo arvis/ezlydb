@@ -32,13 +32,13 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
         
         $http.post('/admin/button_data/',data).success(function(return_data) {
             param={};
-            param["button_action"]=return_data["button_action"]
-            param["object_id"]=form_id
-            param["linked_form"]=return_data["linked_form"]
-            param["field_id"]=return_data["filter_field_name"]
-            param["linked_field_name"]=return_data["linked_field_name"]
+            param["button_action"]=return_data["button_action"];
+            param["object_id"]=form_id;
+            param["linked_form"]=return_data["linked_form"];
+            param["field_id"]=return_data["filter_field_name"];
+            param["linked_field_name"]=return_data["linked_field_name"];
             
-            if (return_data["linked_field_type"]=="lookup_field"){
+            if (return_data["linked_field_type"]==="lookup_field"){
                 var json_data={};
                 json_data["id"]=field._id.$oid;
                 json_data["name"]=field[return_data["filter_field_name"]];
@@ -48,9 +48,16 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
                 param["field_value"]=field[return_data["filter_field_name"]];
             }
             
+            if (return_data["set_field_value"]){
+                param["set_field_value"]=return_data["set_field_value"];
+            }
+            else {
+                param["set_field_value"]=false;
+            }
+            
             //sample url should look like this, first is dummy value
             //objectid/?params=1&linked_field_name=field_value
-            if (return_data["button_action"]=="open_report"){
+            if (return_data["button_action"]==="open_report"){
                 $scope.showForm=false;
                 $scope.showReport=true;
                 $scope.$broadcast('customButtonReport',param);
@@ -127,6 +134,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
   $scope.formParams="";
   $scope.formParamName="";
   $scope.formParamValue="";
+  $scope.setFieldData=false;
   
   $scope.get_data=function(){
     $http.get('/data/'+$scope.form_id+$scope.formParams).success(function(data) {
@@ -159,6 +167,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
         $scope.formParams="?"+param["linked_field_name"]+"="+param["field_value"];
         $scope.formParamName=param["linked_field_name"];
         $scope.formParamValue=param["field_value"];
+        $scope.set_field_value=param["set_field_value"];
         
         //console.log($scope.form_name+"/"+$scope.formParams );
         $scope.get_data();
@@ -169,7 +178,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
 
   $scope.get_lookup_values=function(){
       
-  }
+  };
 
   $scope.delete_row=function(row, index){
 
@@ -187,7 +196,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
       error(function(data, status, headers, config) {
           console.log("failure");
     });
-  }
+  };
 
   $scope.update_row=function(row){
     var data={};
@@ -205,7 +214,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
     data.form_name=$scope.form_id;
     
     // if there is param name and it is requested to set it as data, overwriting as filter value
-    if ($scope.formParamName){
+    if ($scope.formParamName && $scope.set_field_value==true){
         data.data[$scope.formParamName]=$scope.formParamValue;
     }
     
@@ -228,7 +237,7 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
       error(function(data, status, headers, config) {
           console.log("failure");
       });
-  }
+  };
 
   $scope.add_row=function(){
     //$scope.formProps=row;
@@ -244,17 +253,17 @@ frontApp.controller('SingleFormController', function ($scope,$http) {
       error(function(data, status, headers, config) {
           console.log("failure");
       });
-  }
+  };
 
   $scope.open_report=function(field,button_id){
       console.log("open_report button id "+button_id);
       $scope.$emit('customButtonClick',field,button_id,$scope.form_id);
-  }
+  };
   
   $scope.open_form=function(field,button_id){
     console.log("open_form button id "+button_id);
     $scope.$emit('customButtonClick',field,button_id,$scope.form_id);
-  }
+  };
   
   $scope.set_data=function(){
     //$http.post('/someUrl', data).success(successCallback);
@@ -288,6 +297,25 @@ frontApp.controller('SingleReportController', function ($scope,$http) {
         $scope.data = data;
     });
 */    
+});
+
+
+frontApp.controller('MasterDetailReportController', function ($scope,$http) {
+    $scope.report_data=report_js;
+
+    $scope.getLookupData=function(data){
+        console.log(data);
+        try {
+            var obj = JSON.parse(data);
+            return obj.name;
+        }
+        catch(err){
+            return data;
+        }
+    }
+
+
+    
 });
 
 

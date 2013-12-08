@@ -42,7 +42,7 @@ function FormListController($scope, $http) {
         error(function(data, status, headers, config) {
             console.log("failure");
         });
-    }
+    };
     
     $scope.lookupFieldSet=function(field){
         param={};
@@ -53,7 +53,7 @@ function FormListController($scope, $http) {
         //$scope.dbField["lookup"]=param;
         $scope.$emit('lookupFieldSet',param);
         
-    }
+    };
     
     
 
@@ -449,7 +449,6 @@ function ButtonAdminController($scope,$http){
             data.linked_field_name=$scope.linked_field_name._id.$oid;
             data.linked_field_type=$scope.linked_field_name.field_type;
             data.set_field_value=$scope.set_field_value;
-            
         }
         data.form_id=$scope.form_id;
 
@@ -539,6 +538,113 @@ adminApp.controller('SingleRowReportAdmin', function ($scope,$http) {
         }, log);
     };
     
+});
+
+adminApp.controller('MasterDetailReportAdmin', function ($scope,$http) {
+    $scope.forms_list={};
+    $scope.field_list=[];
+    $scope.field_list_detail=[];
+    $scope.new_field_name="";
+    $scope.report_name="";
+
+  $http.get('/admin/form_list').success(function(data) {
+    $scope.forms_list = data;
+    $scope.form_list_detail = data;
+  });
+  
+    $scope.getFormFields= function(form) {
+        var data={};
+        data.form_id=$scope.current_form._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.field_list=return_data;
+            $scope.field_list_filter=return_data;
+            
+            var temp = [];
+            
+            // setting every field as field type, to know when generate report
+            angular.forEach($scope.field_list, function(value, key){
+                $scope.field_list[key].type="field";
+                $scope.field_list[key].field_id=value._id.$oid;
+            }, temp);
+            $scope.report_name=$scope.current_form.title+" page report";
+            $scope.new_field_name="field_"+$scope.field_list.length;
+        });
+    }
+    $scope.getDetailFormFields= function(form) {
+        var data={};
+        data.form_id=$scope.current_detail_form._id.$oid;
+        
+        $http.post('/admin/get_form_fields/', data).
+        success(function(return_data, status, headers, config) {
+            $scope.field_list_detail=return_data;
+            $scope.field_list_detail_filter=return_data;
+        });
+    };
+    
+    
+    $scope.addItem=function(){
+        $scope.field_list.push({name:$scope.new_field_name,type:"text"} );
+        $scope.new_field_name="field_"+$scope.field_list.length;
+    }
+    
+    
+
+    $scope.saveReport=function(){
+        var data={};
+        data.form_id=$scope.current_form._id.$oid;
+        data.form_name=$scope.current_form.name;
+        data.detail_form_id=$scope.current_detail_form._id.$oid;
+        data.detail_form_name=$scope.current_detail_form.name;
+        data.report_type="master_detail";
+        data.report_title=$scope.report_name;
+        data.field_data=$scope.field_list;
+        data.detail_field_data=$scope.field_list_detail;
+        data.filter_field={};
+        data.filter_field.name=filter_field["name"];
+        data.filter_field.id=filter_field._id.$oid;
+        data.filter_field.field_type=filter_field.field_type;
+        data.filter_field_detail={};
+        data.filter_field_detail.name=filter_field_detail["name"];
+        data.filter_field_detail.id=filter_field_detail._id.$oid;
+        data.filter_field_detail.field_type=filter_field_detail.field_type;
+        
+        
+        $http.post('/admin/save_report_single/', data).
+        success(function(return_data, status, headers, config) {
+            console.log("success");
+        });
+    }
+
+    
+    
+    // NOTE: $scope.$apply is called by the draggable directive
+    $scope.updatePosition = function (name, pos) {
+        var log = [];
+        angular.forEach($scope.field_list, function(value, key){
+            if (name==value){
+                $scope.field_list[key].left=pos.left;
+                $scope.field_list[key].top=pos.top;
+            }
+        }, log);
+    };
+
+    // NOTE: $scope.$apply is called by the resizable directive
+    $scope.updateScale = function (name, pos, size) {
+        var log = [];
+        angular.forEach($scope.field_list, function(value, key){
+            if (name==value){
+                $scope.field_list[key].left=pos.left;
+                $scope.field_list[key].top=pos.top;
+                $scope.field_list[key].width=size.width;
+                $scope.field_list[key].height=size.height;
+            }
+        }, log);
+    };
+    
+    
+
 });
 
 

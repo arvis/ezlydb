@@ -73,18 +73,6 @@
           <div class="col-sm-12"> <h4>Filters</h4> </div>
        </div>
        
-        <div class="radio">
-        <label>
-            <input type="radio" name="optionsRadios" id="optionsRadios1" value="by_id" ng-model="filter_type">
-                Filter by current record id
-            </label>
-            </div>
-            <div class="radio">
-            <label>
-            <input type="radio" name="optionsRadios" id="optionsRadios2" value="other_field" ng-model="filter_type">
-                Filter by other field than id
-        </label>
-        </div>
 
        
       <div class="form-group">
@@ -93,7 +81,7 @@
         <div class="col-sm-4">
             <select class="form-control" id="filter_field_name" ng-model="filter_field_name" ng-options="obj.name for obj in current_field_list"  >
             </select>
-            
+            <p class="help-block">This field value of current record will be taken as filter value.</p>
         </div>
 
         <label for="linked_field_name" class="col-sm-2 control-label">= Linked field</label>
@@ -101,12 +89,15 @@
             <select class="form-control" id="linked_field_name" ng-model="linked_field_name" ng-options="obj.name for obj in linked_field_list" >
                 <option value="id">id</option>
             </select>
+            <p class="help-block">This field will be filtered.</p>
         </div>
      </div>
      <div class="checkbox">
-    <label>
-      <input ng-model="set_field_value" type="checkbox"> Set Field value for new linked field data
+        <div class="col-sm-offset-2 col-sm-10">
+        <label>
+          <input ng-model="set_field_value" type="checkbox"> Set field value for new linked field data
         </label>
+        </div>
     </div>
       
       <div class="form-group">

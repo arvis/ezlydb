@@ -1,0 +1,100 @@
+{% raw %}
+<html ng-app="adminApp">
+<head>
+
+<title>EasyDb</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+  <script src="http://code.angularjs.org/1.0.8/angular.min.js"></script>
+  <script src="/static/admin.js" ></script>
+
+
+<style>
+  .draggable { width: 90px; height: 40px; padding: 5px; float: left; margin: 0 10px 10px 0; font-size: .9em; border-style:solid;border-width:1px; }
+  .ui-widget-header p, .ui-widget-content p { margin: 0; }
+  #snaptarget { height: 480px;width: 800px; background: #FFF;margin-left:40px }
+  #selectable .ui-selected { background: #F39814; color: white; }
+  </style>
+  <script>
+  $(function() {
+    $( ".draggable" ).draggable({ snap: true });
+    
+    $( "#draggable5" ).draggable({ snap: ".ui-widget-header" });
+    $( "#drr" ).draggable({ snap: ".ui-widget-header" });
+    
+    $( ".draggable" ).resizable();
+
+    $( "#draggable5" ).resizable();
+    $( "#snaptarget" ).resizable();
+    
+  });
+  </script>
+  
+</head>
+<body ng-controller="MasterDetailReportAdmin">
+
+<div> 
+<label for="base_form">Base form</label>   
+<select id="base_form" ng-model="current_form" ng-change="getFormFields(form)" ng-options="form.title for form in forms_list" 
+    class="form-control" name="baseForm" >
+</select>
+</div>
+
+<div> 
+<label for="base_form">Detail form</label>   
+<select id="base_form" ng-model="current_detail_form" ng-change="getDetailFormFields(form)" ng-options="detail_form.title for detail_form in forms_list" 
+    class="form-control" name="baseForm" >
+</select>
+</div>
+
+<div> 
+<label for="base_form">Filter field</label>   
+<select id="base_form" ng-model="filter_field" ng-options="field.name for field in field_list_filter" 
+    class="form-control" name="baseForm" >
+</select>
+
+<select id="base_form" ng-model="filter_field_detail" ng-options="field_detail.name for field_detail in field_list_detail_filter" 
+    class="form-control" name="baseForm" >
+</select>
+
+
+</div>
+
+
+<div id="snaptarget" >
+  <p>Drag items here to add them</p>
+    <div id="draggable" ng-draggable class="draggable " ng-repeat="field in field_list">
+      <span>{{ field.name }}</span>
+      <button type="button" class="close" ng-click="field_list.splice($index, 1)" aria-hidden="true">&times;</button>
+      
+      
+    </div>
+</div>
+      <div class="row" id="report_data" style="border-style:dashed;border-width:1px; height:'200px'; ">
+        <div class="column">
+          <div style="border-style:solid;border-width:1px; " class="col-sm-2" ng-repeat="detail_field in field_list_detail">
+            {{ detail_field.name }} <button type="button" class="close" ng-click="field_list_detail.splice($index, 1)" aria-hidden="true">&times;</button>
+          </div>
+        </div>    
+      </div>
+
+ 
+<br style="clear:both">
+<div>
+<input ng-model="new_field_name">
+<button ng-click="addItem()" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add item</button>  
+<input ng-model="report_name">
+<button ng-click="saveReport()" class="btn btn-primary"><span class="glyphicon glyphicon-save"></span> Save report</button>  
+</div>
+ 
+<pre>field_list = {{field_list | json}}</pre>
+<pre>field_list_detail = {{field_list_detail | json}}</pre>
+</body>
+</html>
+{% endraw %}
