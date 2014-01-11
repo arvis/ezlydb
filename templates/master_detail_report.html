@@ -1,11 +1,5 @@
-<html ng-app="frontApp" >
-<head>
+<div ng-controller="MasterDetailReportController" ng-init='report_data={{ report_js|safe }}'>
 
-<title>EasyDb</title>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
@@ -14,27 +8,32 @@
   <script src="/static/ang.js" ></script>
 
 
+
 <style>
   .draggable { width: 90px; height: 40px; padding: 5px; float: left; margin: 0 10px 10px 0; font-size: .9em;  }
   .ui-widget-header p, .ui-widget-content p { margin: 0; }
   .field_item {border-style:solid;border-width:1px;}
-  #snaptarget { height: 480px;width: 800px; background: #FFF;margin-left:40px }
+  #snaptarget { height: 200px;width: 800px; background: #FFF;margin-left:40px }
   #selectable .ui-selected { background: #F39814; color: white; }
   </style>
   <script>
-  report_js={{ report_js|safe }}    
+  report_js={{ report_js|safe }};
+  report_detail_js={{ report_detail_js|safe }};
+      
   $(function() {
-    
   });
   </script>
-  
-</head>
-<body ng-controller="MasterDetailReportController">
 
-<div>This is report</div>
-<div id="snaptarget" style="border-style:solid;border-width:1px;" ng-repeat="field in report_data">
+
+<div>Report title</div>
+
+
+<div ng-repeat="field in report_data">
+<div id="snaptarget" style="border-style:solid;border-width:1px;" >
+    
+
     {% for field in report_fields %}
-    <div id="draggable" class="draggable "  ng-style="{position:'relative',  left:'{{field.left}}px',top:'{{field.top}}px' }" >
+    <div id="draggable" class="draggable"  ng-style="{position:'relative',  left:'{{field.left}}px',top:'{{field.top}}px' }" >
       {% if field.type=="field"  %}  
         {% if field.field_type=="lookup_field" %}
             <p ng-bind="getLookupData(field.{{ field.field_id }})"></p>
@@ -48,8 +47,31 @@
     {% endfor %}
 
 </div>
+<table>
+    <thead>
+    <tr>
+    {% for detail_head in detail_report_fields %}
+        <th>{{ detail_head.name }} </th>
+    {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="detail in field.detail">
+        {% for row in detail_report_fields %}
+            {% if row.field_type=="lookup_field" %}
+                <td ng-bind="getLookupData(detail.{{ row.field_id }})">  </td> 
+            {% else %}
+                <td ng-bind="detail.{{ row.field_id }}">  </td> 
+            {% endif %}
+
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+
+</div>
  
 <br style="clear:both">
+
  
-</body>
-</html>
+</div>

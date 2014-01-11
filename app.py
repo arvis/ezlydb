@@ -198,16 +198,49 @@ def show_report(report_name):
 def render_master_detail(report):
 
     filter_params={}
+    
     if len(request.args)>0:
-        #TODO: assuming for now that there is only one param, later need to redone it
-        filter_params={request.args.items()[0][0]:request.args.values()[0]}
         
-    report_data = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
-    json_docs=json.dumps(list(report_data), default=json_util.default)
-
+        if request.args['id']:
+            filter_params=dict({"_id": ObjectId(request.args['id'])})
+            #filter_params={}
+        else:
+            filter_params=dict({request.args.items()[0][0]:request.args.values()[0]})
+        
+    report_data = mongo.db["data_"+report["form_id"]].find(filter_params)
+    
     #import pdb; pdb.set_trace()
+    detail_report_data = mongo.db["data_"+report["detail_form_id"]].find()
+    
+    report_list=list(report_data)
+    detail_list=list(detail_report_data)
+    filter_field=report["filter_field"]["id"]
+    filter_field_detail=report["filter_field_detail"]["id"]
 
-    return render_template('master_detail_report.html',report_fields=report["field_data"],report_js=json_docs)
+    for i in xrange(0,len(detail_list)):
+        detail_list[i]["id"]=str(detail_list[i]["_id"])
+        
+        for a in xrange(0,len(report_list)):
+            if not "detail" in report_list[a]:
+                report_list[a]["detail"]=[]
+            current_filter=str(report_list[a]["_id"])#report_list[a][filter_field]
+            
+            if not filter_field_detail in detail_list[i]:
+                break
+            
+            current_filter_detail=json.loads(detail_list[i][filter_field_detail])["id"]
+            #import pdb; pdb.set_trace()
+            if current_filter==current_filter_detail:
+                report_list[a]["detail"].append(detail_list[i])
+        
+    #json_docs=json.dumps(list(report_data), default=json_util.default)
+    json_docs=json.dumps(report_list, default=json_util.default)
+
+    detail_json_docs=json.dumps(list(detail_report_data), default=json_util.default)
+    
+    return render_template('master_detail_report.html',
+        report_fields=report["field_data"],detail_report_fields=report["detail_field_data"],
+        report_js=json_docs,report_detail_js=detail_json_docs)
 
 @app.route("/report_data/<report_name>/",methods=['GET'])
 def report_data(report_name):

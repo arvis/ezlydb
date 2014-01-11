@@ -60,7 +60,7 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
             if (return_data["button_action"]==="open_report"){
                 $scope.showForm=false;
                 $scope.showReport=true;
-                $scope.$broadcast('customButtonReport',param);
+                $scope.$broadcast('customButtonReport',param,field);
             }
             else {
                 $scope.showForm=true;
@@ -78,14 +78,14 @@ frontApp.controller('ReportController', function ($scope,$http) {
     $scope.data=[];
     $scope.report_id="";
 
+/*
     $scope.getReportData=function(){
         $http.get('report_data/'+$scope.report_id).success(function(data) {
             $scope.data = data;
         });
     }
-
+*/
     $scope.getLookupData=function(data){
-        console.log(data);
         try {
             var obj = JSON.parse(data);
             return obj.name;
@@ -100,27 +100,23 @@ frontApp.controller('ReportController', function ($scope,$http) {
         $scope.report_name=param.name;
         $scope.report_id=param._id.$oid;
         $scope.formParams="";
-        $scope.getReportData();
+        //$scope.getReportData();
         
     });
     
-    $scope.$on('customButtonReport', function($sc,param) {
+    $scope.$on('customButtonReport', function($sc,param,field) {
         //object_id/?params=1&linked_field_name=field_value
-        console.log(param);
         $scope.report_id=param["linked_form"];
-        
-        if (typeof param["linked_field_name"] === "undefined") {
-            $scope.formParams="";
-        }
-        else if (typeof param["field_value"] === "undefined") {
-            $scope.formParams="";
+        $scope.formParams=""
+        if (param["field_id"]=="id"){
+            $scope.formParams="?id="+field._id.$oid;
         }
         else {
             $scope.formParams="?"+param["linked_field_name"]+"="+param["field_value"];
         }
-        //console.log($scope.report_id+"/"+$scope.formParams );
+        //console.log("report_url"+ $scope.report_id+"/"+$scope.formParams );
         
-        $scope.getReportData();
+        //$scope.getReportData();
     });
 });
 
@@ -301,10 +297,13 @@ frontApp.controller('SingleReportController', function ($scope,$http) {
 
 
 frontApp.controller('MasterDetailReportController', function ($scope,$http) {
-    $scope.report_data=report_js;
+    console.log("report_data");
+    //$scope.report_data=report_js;
+    //$scope.detail_report_data=report_detail_js;
+
 
     $scope.getLookupData=function(data){
-        console.log(data);
+        //console.log(data);
         try {
             var obj = JSON.parse(data);
             return obj.name;

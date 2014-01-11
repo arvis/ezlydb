@@ -442,8 +442,13 @@ function ButtonAdminController($scope,$http){
         data.button_action=$scope.button_action;
         data.linked_form=$scope.linked_form._id.$oid;
         data.filter_options=$scope.filter_options;
-        data.filter_field_name=$scope.filter_field_name._id.$oid;
-        
+        console.log($scope.filter_field_name._id);
+        if ($scope.filter_field_name._id){
+            data.filter_field_name=$scope.filter_field_name._id.$oid;
+        }
+        else {
+            data.filter_field_name="id";
+        }
         
         if ($scope.button_action=="open_form" && $scope.filter_options=="by_current_record"){
             data.linked_field_name=$scope.linked_field_name._id.$oid;
@@ -580,6 +585,12 @@ adminApp.controller('MasterDetailReportAdmin', function ($scope,$http) {
         success(function(return_data, status, headers, config) {
             $scope.field_list_detail=return_data;
             $scope.field_list_detail_filter=return_data;
+            var temp=[];
+            angular.forEach($scope.field_list_detail, function(value, key){
+                $scope.field_list_detail[key].type="field";
+                $scope.field_list_detail[key].field_id=value._id.$oid;
+            }, temp);
+            
         });
     };
     
@@ -598,17 +609,17 @@ adminApp.controller('MasterDetailReportAdmin', function ($scope,$http) {
         data.detail_form_id=$scope.current_detail_form._id.$oid;
         data.detail_form_name=$scope.current_detail_form.name;
         data.report_type="master_detail";
-        data.report_title=$scope.report_name;
+        data.title=$scope.report_name;
         data.field_data=$scope.field_list;
         data.detail_field_data=$scope.field_list_detail;
         data.filter_field={};
-        data.filter_field.name=filter_field["name"];
-        data.filter_field.id=filter_field._id.$oid;
-        data.filter_field.field_type=filter_field.field_type;
+        data.filter_field.name=$scope.filter_field["name"];
+        data.filter_field.id=$scope.filter_field._id.$oid;
+        data.filter_field.field_type=$scope.filter_field.field_type;
         data.filter_field_detail={};
-        data.filter_field_detail.name=filter_field_detail["name"];
-        data.filter_field_detail.id=filter_field_detail._id.$oid;
-        data.filter_field_detail.field_type=filter_field_detail.field_type;
+        data.filter_field_detail.name=$scope.filter_field_detail["name"];
+        data.filter_field_detail.id=$scope.filter_field_detail._id.$oid;
+        data.filter_field_detail.field_type=$scope.filter_field_detail.field_type;
         
         
         $http.post('/admin/save_report_single/', data).
