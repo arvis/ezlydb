@@ -188,11 +188,21 @@ def show_report(report_name):
     
     if report is None:
         return ""
-    if report["report_type"]:
+        
+    if "report_type" in report:
         return render_master_detail(report)
         
     field_data=mongo.db["fields_"+report["form_id"]].find()
-    return render_template('report_fields.html',report=report,report_fields=report["fields"])
+    
+    filter_params={}
+    if len(request.args)>0:
+        #TODO: assuming for now that there is only one param, later need to redone it
+        filter_params={request.args.items()[0][0]:request.args.values()[0]}
+        
+    docs = mongo.db["data_"+report["form_id"]].find(dict(filter_params))
+    data_json=json.dumps(list(docs), default=json_util.default)
+    
+    return render_template('report_fields.html',report=report,report_fields=report["fields"],report_js=data_json)
     
 
 def render_master_detail(report):

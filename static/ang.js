@@ -21,11 +21,15 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
         $scope.showForm=false;
         $scope.showReport=true;
         
+        $scope.report_name=param.name;
+        $scope.report_id=param._id.$oid;
+        $scope.formParams="";
+
+        
         $scope.$broadcast('reportClickonChild',param);
     });
     
     $scope.$on('customButtonClick', function($sc,field,button_id,form_id) {
-        console.log(field);
         var data={};
         data["form_id"]=form_id;
         data["button_id"]=button_id;
@@ -75,7 +79,7 @@ frontApp.controller('ReportController', function ($scope,$http) {
 //function ReportController($scope, $http) {
     $scope.form_name="";
     $scope.form_id="";
-    $scope.data=[];
+    //$scope.data=[];
     $scope.report_id="";
 
 /*
