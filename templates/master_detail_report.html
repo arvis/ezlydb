@@ -29,7 +29,7 @@
 
 
 <div ng-repeat="field in report_data">
-<div id="snaptarget" style="border-style:solid;border-width:1px;" >
+<div id="snaptarget" style="border-style:solid;border-width:0px;" >
     
 
     {% for field in report_fields %}
@@ -47,7 +47,7 @@
     {% endfor %}
 
 </div>
-<table>
+<table class="table table-striped">
     <thead>
     <tr>
     {% for detail_head in detail_report_fields %}
