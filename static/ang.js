@@ -9,17 +9,20 @@ frontApp.controller('RootFrontController', function ($scope,$http) {
     $scope.showReport=false;
     $scope.formParams="";
     $scope.reportParams="";
+    $scope.showDashboard=true;
     
     
     $scope.$on('formMenuClick', function($sc,param) {
         $scope.showForm=true;
         $scope.showReport=false;
+        $scope.showDashboard=false;
         $scope.$broadcast('formClickonChild',param);
     });
 
     $scope.$on('reportMenuClick', function($sc,param) {
         $scope.showForm=false;
         $scope.showReport=true;
+        $scope.showDashboard=false;
         
         $scope.report_name=param.name;
         $scope.report_id=param._id.$oid;

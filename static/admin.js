@@ -71,10 +71,12 @@ function ReportListController($scope, $http) {
 
     $scope.reportMenuClick = function(param) {
         $scope.$broadcast('reportMenuClick',param);
+        $scope.showDashboard=false;
     };
  
     $scope.reportMenuToRoot = function(param) {
         $scope.$emit('reportMenuClick',param);
+        $scope.showDashboard=false;
     };
  
  
@@ -290,8 +292,12 @@ function ReportAdminController($scope, $http) {
     
     $scope.$on('reportMenuClick', function($sc,param) {
         var report_data={};
+
+        //check if it is master-detail report
+        if (param.report_type){
+            window.location = "/admin/report2/?id="+param._id.$oid;
+        }
         
-        console.log(param);
         $scope.title=param.title;
         $scope.report_footer=param.report_footer;
         $scope.report_id=param._id.$oid;
