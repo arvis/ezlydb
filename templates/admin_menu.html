@@ -53,23 +53,17 @@
         <![endif]-->
         <style type="text/css"></style><style type="text/css">.jqstooltip { position: absolute;left: 0px;top: 0px;visibility: hidden;background: rgb(0, 0, 0) transparent;background-color: rgba(0,0,0,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";color: white;font: 10px arial, san serif;text-align: left;white-space: nowrap;padding: 5px;border: 1px solid white;z-index: 10000;}.jqsfield { color: white;font: 10px arial, san serif;text-align: left;}</style></head>
 
-    <body style="" >
-            <div ng-include src="'/admin/forms/new/'"></div>
-
-        
+    <body>
         <div class="navbar navbar-default" id="navbar">
             <script type="text/javascript">
-                try {
-                    ace.settings.check('navbar', 'fixed')
-                } catch (e) {
-                }
+                try{ace.settings.check('navbar' , 'fixed')}catch(e){}
             </script>
 
             <div class="navbar-container" id="navbar-container">
                 <div class="navbar-header pull-left">
                     <a href="/" class="navbar-brand">
                         <i class="icon-cloud"></i>
-                        EzlyDb administration - forms
+                        EzlyDb <span class="badge badge-important">alpha</span> administration - forms
                     </a><!-- /.brand -->
                 </div><!-- /.navbar-header -->
 
@@ -77,15 +71,15 @@
                     <ul class="nav ace-nav">
 
                         <li class="green">
-                            <a href="/admin/reports" >
+                            <a href="/admin/reports/" >
                                 <i class="icon-file"></i>
                                 Reports
                             </a>
                         </li>
                         <li class="purple">
                             <a href="/admin/report2" >
-                                <i class="icon-file"></i>
-                                Master-detail reports
+                                <i class="icon-list"></i>
+                                Master-detail reports<span class="badge badge-important">!</span>
                             </a>
                         </li>
                     </ul>
@@ -139,10 +133,7 @@
 
         <div class="main-container" id="main-container" ng-controller="FormListController" >
             <script type="text/javascript">
-                try {
-                    ace.settings.check('main-container', 'fixed')
-                } catch (e) {
-                }
+                try{ace.settings.check('main-container' , 'fixed')}catch(e){}
             </script>
 
             <div class="main-container-inner">
@@ -152,12 +143,38 @@
 
                 <div class="sidebar" id="sidebar">
                     <script type="text/javascript">
-                        try {
-                            ace.settings.check('sidebar', 'fixed')
-                        } catch (e) {
-                        }
+                        try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
                     </script>
 
+                    <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                        <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                            <button class="btn btn-success">
+                                <i class="icon-signal"></i>
+                            </button>
+
+                            <button class="btn btn-info">
+                                <i class="icon-pencil"></i>
+                            </button>
+
+                            <button class="btn btn-warning">
+                                <i class="icon-group"></i>
+                            </button>
+
+                            <button class="btn btn-danger">
+                                <i class="icon-cogs"></i>
+                            </button>
+                        </div>
+
+                        <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                            <span class="btn btn-success"></span>
+
+                            <span class="btn btn-info"></span>
+
+                            <span class="btn btn-warning"></span>
+
+                            <span class="btn btn-danger"></span>
+                        </div>
+                    </div><!-- #sidebar-shortcuts -->
 
                     <ul class="nav nav-list">
                         <li>
@@ -166,7 +183,6 @@
                                 <span class="menu-text"> Dashboard </span>
                             </a>
                         </li>
-
                         <li>
                             <a href="#" ng-click="formMenuClick()">
                                 <i class="icon-plus"></i>
@@ -187,72 +203,79 @@
                     </div>
 
                     <script type="text/javascript">
-                        try {
-                            ace.settings.check('sidebar', 'collapsed')
-                        } catch (e) {
-                        }
+                        try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
                     </script>
                 </div>
 
                 <div class="main-content">
-
+                    
                     <div class="page-content">
-                        <div ng-show="showDashboard" class="row">
 
-                            <div class="page-header">
-                                <h1>Dashboard</h1>
-                            </div><!-- /.page-header -->
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <!-- PAGE CONTENT BEGINS -->
+                                
+                                <div ng-show="showDashboard" class="row">
 
-                            <div class="col-xs-12 col-sm-4 col-sm-offset-1 widget-container-span ui-sortable">
-                                <div class="widget-box light-border" style="opacity: 1; z-index: 0;">
-                                    <div class="widget-header header-color-blue">
-                                        <h5 class="smaller">Forms</h5>
+                                        <div class="page-header">
+                                            <h1>Dashboard</h1>
+                                        </div><!-- /.page-header -->
 
+                                        <div class="col-xs-12 col-sm-4 col-sm-offset-1 widget-container-span ui-sortable">
+                                            <div class="widget-box light-border" style="opacity: 1; z-index: 0;">
+                                                <div class="widget-header header-color-blue">
+                                                    <h5 class="smaller">Forms</h5>
+
+                                                </div>
+
+                                                <div class="widget-body">
+                                                    <ul class="nav nav-list" >
+                                                        <li>
+                                                            <a href="#" ng-click="formMenuClick()">
+                                                                <div class="clearfix">
+                                                                    <span class="pull-left">
+                                                                        <i class="btn btn-xs no-hover btn-green icon-plus"></i>
+                                                                        Add new form
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <li ng-repeat="form in forms_list">
+                                                            <a href="#" ng-click="formMenuClick(form)">
+                                                                <div class="clearfix">
+                                                                    <span class="pull-left">
+                                                                        <i class="btn btn-xs no-hover btn-yellow icon-edit"></i>
+                                                                        {{ form.title }}
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+
+                                                    </ul>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <div class="widget-body">
-                                        <ul class="nav nav-list" >
-                                            <li>
-                                                <a href="#" ng-click="formMenuClick()">
-                                                    <div class="clearfix">
-                                                        <span class="pull-left">
-                                                            <i class="btn btn-xs no-hover btn-green icon-plus"></i>
-                                                            Add new form
-                                                        </span>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li ng-repeat="form in forms_list">
-                                                <a href="#" ng-click="formMenuClick(form)">
-                                                    <div class="clearfix">
-                                                        <span class="pull-left">
-                                                            <i class="btn btn-xs no-hover btn-yellow icon-edit"></i>
-                                                            {{ form.title }}
-                                                        </span>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                
 
-                                        </ul>
+                                <div ng-include="'/admin/forms/'+form_name"  ></div>
 
 
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            
-                            
-                        </div>
-
-                        
-                        <div ng-include="'/admin/forms/'+form_name"  ></div>
-                        
-                        
-                        
+                                </div><!-- PAGE CONTENT ENDS -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
                     </div><!-- /.page-content -->
                 </div><!-- /.main-content -->
 
-            </div><!-- /.main-container -->
+            </div><!-- /.main-container-inner -->
+
+            <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+                <i class="icon-double-angle-up icon-only bigger-110"></i>
+            </a>
+        </div><!-- /.main-container -->
 
             <!-- basic scripts -->
 
@@ -308,11 +331,22 @@
 
             <!-- inline scripts related to this page -->
 
-            <script type="text/javascript">
+            <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+            <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+            <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 
 
-            </script>
 
+          <script>
+          $(function() {
+            $( ".column" ).sortable({
+              connectWith: ".column"
+            });
+            
+            
+            $( ".column" ).disableSelection();
+          });
+          </script>
 
             <div class="tooltip top in" style="display: none;"><div class="tooltip-inner"></div></div></body></html>
 

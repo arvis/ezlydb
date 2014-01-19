@@ -1,11 +1,14 @@
 {% raw %}
 <div ng-controller="DbFieldController">
-<div ng-show="showFieldList">
+<div class="page-header" ng-show="showFieldList">
+    
 <h1>Form {{ formProps.title }}
   <span class="pull-right" >   
   <button type="button"  ng-click="showFormProperties=!showFormProperties" class="btn btn-default btn-xs">Click to edit form properties</button> 
   </span>
 </h1>
+
+    <div class="hr hr-18 dotted hr-double"></div>
 
  <div ng-show="showFormProperties">
      
@@ -31,7 +34,7 @@
      
 </div>
 
-<div class="well">
+<div>
     <ul class="list-group" >
         <li class="list-group-item" ng-repeat="dbField in master "  >
             {{dbField.name}}    
@@ -50,23 +53,9 @@
 
     <div ng-show="showAddField">        
             <div ng-include="'/admin/show_field_form/'" ></div>
-
-          
     </div>
-    
-
 </div>
-     
-     <a href="/admin/buttons/{{formProps.id}}/">Add button for form </a> 
-     <button type="button"  ng-click="showHiddenData=!showHiddenData" class="btn btn-default btn-xs">Show dev data</button> 
-     <div ng-show="showHiddenData">
-      
-      <pre>dbfield = {{dbField | json}}</pre>
-      <pre>formProps = {{formProps | json}}</pre>
-      <pre>master = {{master | json}}</pre>      
-    </div>
-      
-      
+     <a href="/admin/buttons/{{formProps.id}}/">Add button for form </a> <span class="badge badge-warning">!</span>
       
     </div>
 
