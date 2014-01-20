@@ -192,6 +192,8 @@
                 <div class="main-content">
  
                     <div class="page-content">
+                        
+
                         <div ng-show="showDashboard" class="row">
                             
                         <div class="page-header">
@@ -253,6 +255,7 @@
                             </div>
 
                         <div class="row">
+                            <div class="col-xs-12">
                             <div ng-show="showForm" ng-controller="SingleFormController">
                                 <h3>{{ form_name }}</h3>
                                 {% endraw %}
@@ -263,6 +266,8 @@
                             <div ng-show="showReport">
                                 <div ng-include="'/show_report/'+report_id+'/'+formParams"></div>
                             </div>
+                            </div>
+                            
                         </div>
                     </div><!-- /.page-content -->
                 </div><!-- /.main-content -->
