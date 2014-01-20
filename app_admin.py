@@ -41,7 +41,11 @@ def set_form_properties():
     
     if "id" in request.json:
         form_id=request.json["id"]
-        del data["_id"] 
+        try:
+            del data["_id"] 
+        except KeyError:
+            pass
+            
         val=mongo.db["forms"].update({'_id': ObjectId(form_id)},  data)
         #import pdb; pdb.set_trace()
         

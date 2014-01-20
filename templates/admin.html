@@ -12,23 +12,19 @@
 
  <div ng-show="showFormProperties">
      
-    <form role="form" novalidate class="css-form">
+    <form class="form-horizontal" name="form_props" role="form" novalidate>
     <div class="form-group">
-        <input type="text" class="form-control" id="form_id" placeholder="Enter form title" ng-model="formProps.name" required />
-        
-        <label for="name">Title</label>
-        <input type="text" class="form-control" id="form_title" placeholder="Enter form title" ng-model="formProps.title" required />
-        <label for="field_type">Form type</label>
-        <select class="form-control" id="form_type" ng-model="formProps.form_type">
-          <option value="single_record" selected>Single record</option>
-          <option value="grid">Grid</option>
-        </select>
-        <input type="text" readonly class="form-control" id="form_id" placeholder="dont edit, id" ng-model="formProps.id" />
-
+        <input type="hidden" class="form-control" id="form_id" placeholder="Enter form title" ng-model="formProps.name" />
+        <label class="col-sm-3 control-label" for="form_title">Title:</label>
+        <div class="col-sm-6 col-md-4" >
+            <input type="text" class="form-control" id="form_title" placeholder="Enter form title" ng-model="formProps.title" required />
+        </div>
 
     </div>      
 
-  <button type="button"  ng-click="set_form_properties()" class="btn btn-success btn-s">Done</button> 
+        <div class="col-sm-1 col-md-offset-3" >
+            <button type="button" ng-disabled="form_props.$invalid" ng-click="set_form_properties()" class="btn btn-success"><i class="icon-ok"></i> Done</button> 
+        </div>
     </form>
      
      

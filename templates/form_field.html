@@ -1,6 +1,6 @@
 {% raw %}
 
-  <form class="form-horizontal" role="form">
+  <form class="form-horizontal" name="fieldForm" role="form" ng-submit="set_field_properties(dbField)" novalidate>
       
     <div class="form-group">
         <label class="col-sm-3 control-label" for="name">Name</label>
@@ -11,7 +11,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="field_type">Field type</label>
         <div class="col-sm-6 col-md-2" >
-            <select class="form-control" id="field_type" ng-model="dbField.field_type">
+            <select class="form-control" id="field_type" ng-model="dbField.field_type" required>
               <option value="text_field">Text</option>
               <option value="bigtext_field">Lots of text</option>
               <option value="int_field">Integer</option>
@@ -25,7 +25,7 @@
     <div class="form-group">
         <label class="col-sm-3 control-label" for="name">Default value</label>
         <div class="col-sm-4 col-md-3" >
-        <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value" required />
+        <input type="text" class="form-control" id="default_value" placeholder="Enter default value" ng-model="dbField.default_value"  />
         </div>    
     </div>    
 
@@ -56,6 +56,6 @@
         </div>
         
     
-    <button type="button" class="btn btn-success" ng-click="set_field_properties(dbField)">Done</button>
+    <button type="button" class="btn btn-success" ng-disabled="fieldForm.$invalid" ng-click="set_field_properties(dbField)" >Done</button>
   </form>
 {% endraw %}
